@@ -1,0 +1,5 @@
+com\updateshub\controllers\NoteController.class
+com\updateshub\models\Note.class
+com\updateshub\config\SecurityConfig.class
+com\updateshub\repositories\NoteRepository.class
+com\updateshub\UpdatesHubApplication.class
