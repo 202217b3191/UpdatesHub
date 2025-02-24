@@ -1,47 +1,48 @@
 const API_URL = "http://localhost:8080/api/notes";
-const username = "admin";  // Replace with your actual username
-const password = "password";  // Replace with your actual password
 
+// Save Note
 function saveNote() {
     const title = document.getElementById("title").value;
     const content = document.getElementById("content").value;
+    const token = localStorage.getItem("jwtToken"); // Get stored JWT token
 
-    fetch("http://localhost:8080/api/notes", {
+    if (!token) {
+        alert("You are not logged in!");
+        window.location.href = "login.html";
+        return;
+    }
+
+    fetch(API_URL, {
         method: "POST",
         headers: { 
             "Content-Type": "application/json",
-            "Authorization": "Basic " + btoa("admin:password") 
+            "Authorization": `Bearer ${token}` 
         },
-        body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() }) // Ensure correct date format
+        body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() })
     })
-    .then(response => {
-        console.log("Response Status:", response.status);
-        return response.json().catch(() => { throw new Error("Invalid JSON response") });
-    })
+    .then(response => response.json())
     .then(data => {
-        console.log("Response Data:", data);
+        console.log("Note saved:", data);
         loadNotes();
     })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("Failed to save note. Check console for details.");
-    });
+    .catch(error => console.error("Error:", error));
 }
 
-
+// Load Notes
 function loadNotes() {
+    const token = localStorage.getItem("jwtToken");
+
+    if (!token) {
+        alert("You are not logged in!");
+        window.location.href = "login.html";
+        return;
+    }
+
     fetch(API_URL, {
         method: "GET",
-        headers: { 
-            "Authorization": "Basic " + btoa(username + ":" + password)  // Include credentials
-        }
+        headers: { "Authorization": `Bearer ${token}` }
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Failed to load notes");
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(notes => {
         const list = document.getElementById("notesList");
         list.innerHTML = "";
@@ -51,10 +52,7 @@ function loadNotes() {
             list.appendChild(li);
         });
     })
-    .catch(error => {
-        console.error("Error:", error);
-        alert("Failed to load notes. Check the console for details.");
-    });
+    .catch(error => console.error("Error:", error));
 }
 
 document.addEventListener("DOMContentLoaded", loadNotes);

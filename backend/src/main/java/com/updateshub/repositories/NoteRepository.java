@@ -8,4 +8,5 @@ import java.util.Date;
 
 public interface NoteRepository extends MongoRepository<Note, String> {
     List<Note> findByNextReviewDateBefore(Date date);
+    List<Note> findByUsername(String username);
 }

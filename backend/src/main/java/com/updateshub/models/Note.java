@@ -21,6 +21,8 @@ public class Note {
 
     private LocalDateTime nextReviewDate;
 
+    private String username;
+
     // Default constructor
     public Note() {
     }
@@ -49,6 +51,14 @@ public class Note {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public void getusername(String username){
+        this.username = username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
     
 

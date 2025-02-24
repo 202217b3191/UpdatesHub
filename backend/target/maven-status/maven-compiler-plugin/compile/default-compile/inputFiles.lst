@@ -1,5 +1,11 @@
-C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\controllers\NoteController.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\controllers\AuthController.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\models\User.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\security\JwtUtil.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\UpdatesHubApplication.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\security\JwtAuthenticationFilter.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\config\SecurityConfig.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\security\JwtService.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\models\Note.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\repositories\NoteRepository.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\repositories\UserRepository.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\controllers\NotesController.java

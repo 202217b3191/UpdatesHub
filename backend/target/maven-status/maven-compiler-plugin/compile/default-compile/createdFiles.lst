@@ -1,5 +1,11 @@
-com\updateshub\controllers\NoteController.class
+com\updateshub\controllers\NotesController.class
 com\updateshub\models\Note.class
-com\updateshub\config\SecurityConfig.class
 com\updateshub\repositories\NoteRepository.class
+com\updateshub\repositories\UserRepository.class
+com\updateshub\security\JwtAuthenticationFilter.class
+com\updateshub\security\JwtService.class
+com\updateshub\config\SecurityConfig.class
+com\updateshub\controllers\AuthController.class
+com\updateshub\models\User.class
+com\updateshub\security\JwtUtil.class
 com\updateshub\UpdatesHubApplication.class
