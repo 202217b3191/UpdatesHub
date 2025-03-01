@@ -1,29 +1,28 @@
-const API_BASE_URL = "http://localhost:8080/api/auth"; // Backend auth URL
+document.addEventListener("DOMContentLoaded", () => {
+    const loginBtn = document.getElementById("loginBtn");
+    if (loginBtn) {
+        loginBtn.addEventListener("click", loginUser);
+    }
 
-// Register new user
-function registerUser() {
-    const username = document.getElementById("registerUsername").value;
-    const password = document.getElementById("registerPassword").value;
+    const registerBtn = document.getElementById("registerBtn");
+    if (registerBtn) {
+        registerBtn.addEventListener("click", registerUser);
+    }
+});
 
-    fetch(`${API_BASE_URL}/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert("Registration successful! You can now log in.");
-        window.location.href = "login.html";
-    })
-    .catch(error => console.error("Error:", error));
-}
-
-// Login user
 function loginUser() {
-    const username = document.getElementById("loginUsername").value;
-    const password = document.getElementById("loginPassword").value;
+    const usernameInput = document.getElementById("loginUsername");
+    const passwordInput = document.getElementById("loginPassword");
 
-    fetch(`${API_BASE_URL}/login`, {
+    if (!usernameInput || !passwordInput) {
+        console.error("Login input fields not found.");
+        return;
+    }
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+
+    fetch("http://localhost:8080/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password })
@@ -41,8 +40,27 @@ function loginUser() {
     .catch(error => console.error("Error:", error));
 }
 
-// Logout user
-document.getElementById("logoutBtn")?.addEventListener("click", () => {
-    localStorage.removeItem("jwtToken");
-    window.location.href = "login.html";
-});
+function registerUser() {
+    const usernameInput = document.getElementById("registerUsername");
+    const passwordInput = document.getElementById("registerPassword");
+
+    if (!usernameInput || !passwordInput) {
+        console.error("Register input fields not found.");
+        return;
+    }
+
+    const username = usernameInput.value;
+    const password = passwordInput.value;
+
+    fetch("http://localhost:8080/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert("Registration successful! You can now log in.");
+        window.location.href = "login.html";
+    })
+    .catch(error => console.error("Error:", error));
+}

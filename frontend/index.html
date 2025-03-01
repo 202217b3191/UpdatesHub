@@ -3,17 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UpdatesHub - Dashboard</title>
+    <title>UpdatesHub</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>UpdatesHub</h1>
-    <button id="logoutBtn">Logout</button>
-    <input type="text" id="title" placeholder="Title">
-    <textarea id="content" placeholder="Write your note..."></textarea>
-    <button onclick="saveNote()">Save Note</button>
-    <ul id="notesList"></ul>
-    <script src="app.js"></script>
-    <script src="auth.js"></script>
+
+    <hr class="divider">
+    <h1 class="title">UpdatesHub</h1>
+    <hr class="divider">
+
+    <div class="button-container">
+        <button class="create-note-btn">Create New Note</button>
+        <button class="Logout"><a href="Welcome.html">Logout</a></button>
+    </div>
+
+    <hr class="divider">
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Saved Notes</h2>
+            <ul>
+                <li><a href="#">📌 Dashboard</a></li>
+                <li><a href="MyNotes.html">📂 My Notes</a></li>
+                
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <h2>Welcome to UpdatesHub</h2>
+            <p>Start creating and managing your notes efficiently!</p>
+        </div>
+    </div>
+
 </body>
 </html>
+
+

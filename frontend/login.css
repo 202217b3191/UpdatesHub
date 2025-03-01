@@ -1,0 +1,85 @@
+/* Global Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #F5F7FA; /* Light Gray */
+    color: #34495E; /* Dark Gray */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Auth Container */
+.auth-container {
+    background-color: white;
+    padding: 40px;
+    border-radius: 15px;    
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 350px;
+    margin: 20px;
+}
+
+/* Heading */
+.auth-container h2 {
+    font-size: 24px;
+    color: #4A90E2; /* Cool Blue */
+    margin-bottom: 25px;
+}
+
+/* Input Fields */
+.auth-container input {
+    width: calc(100% - 24px);
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #BDC3C7;
+    border-radius: 8px;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.3s ease-in-out;
+}
+
+.auth-container input:focus {
+    border-color: #4A90E2;
+}
+
+/* Login Button */
+.btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(to right, #E94E77, #FF6B6B); /* Warm Pink Gradient */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+    background: linear-gradient(to right, #FF6B6B, #E94E77);
+    transform: scale(1.05);
+}
+
+.btn:active {
+    transform: scale(0.97);
+}
+
+/* Register Link */
+.auth-container p {
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+.auth-container a {
+    color: #4A90E2;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.auth-container a:hover {
+    text-decoration: underline;
+}

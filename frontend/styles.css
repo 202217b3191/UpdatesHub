@@ -1,30 +1,117 @@
+/* Global Styles */
 body {
-    font-family: Arial, sans-serif;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #F5F7FA; /* Light Gray */
+    color: #34495E; /* Dark Gray */
     text-align: center;
 }
 
-input, textarea, button {
-    display: block;
-    margin: 10px auto;
-    width: 80%;
-    padding: 10px;
-    font-size: 16px;
+/* Title */
+.title {
+    font-size: 32px;
+    font-weight: bold;
+    color: #4A90E2; /* Cool Blue */
 }
 
-button {
-    background-color: #007BFF;
+/* Divider (HR) */
+.divider {
+    width: 100%;
+    border: 1px solid #BDC3C7;
+    margin: 15px auto;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Buttons aligned to left & right */
+    align-items: center;
+    width: 100%; /* Ensure it spans full width */
+    padding: 10px 0;
+}
+
+/* Button Styling */
+.create-note-btn, .Logout {
+    text-decoration: none;
+    background: linear-gradient(to right, #E94E77, #FF6B6B);
     color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
     border: none;
+    border-radius: 10px;
     cursor: pointer;
+    transition: all 0.3s ease-in-out;
 }
 
-button:hover {
-    background-color: #0056b3;
+.create-note-btn:hover, .Logout:hover {
+    background: linear-gradient(to right, #FF6B6B, #E94E77);
+    transform: scale(1.05);
 }
 
-#logoutBtn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: red;
+.create-note-btn:active, .Logout:active {
+    transform: scale(0.97);
 }
+
+/* Layout */
+.container {
+    display: flex;
+    width: 80%;
+    margin: 20px auto;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background-color: #2C3E50; /* Deep Blue-Gray */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.sidebar h2 {
+    font-size: 22px;
+    color: #4A90E2; /* Cool Blue */
+    margin-bottom: 20px;
+}
+
+/* Sidebar List */
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 10px 0;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 10px;
+    background-color: #34495E;
+    border-radius: 6px;
+    transition: all 0.3s ease-in-out;
+}
+
+.sidebar ul li a:hover {
+    background: #4A90E2;
+    color: white;
+    transform: scale(1.05);
+}
+
+/* Content */
+.content {
+    flex: 1;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    margin-left: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.content h2 {
+    color: #4A90E2;
+}
+
+

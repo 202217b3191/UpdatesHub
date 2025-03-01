@@ -1,0 +1,81 @@
+/* Global Reset */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background-color: #F5F7FA; /* Light Gray */
+    color: #34495E; /* Dark Gray */
+    text-align: center;
+}
+
+/* Logo Container - Top Left */
+.logo-container {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+/* Logo Image */
+.logo-container img {
+    width: 35px; /* Small but visible */
+    height: auto;
+    object-fit: contain;
+    display: block;
+}
+
+/* Auth Buttons (Login/Register) - Top Right */
+.auth-buttons {
+    position: absolute;
+    top: 15px;
+    right: 30px;
+    display: flex;
+    gap: 12px;
+}
+
+/* Button Styling */
+.btn {
+    text-decoration: none;
+    padding: 10px 20px;
+    background: linear-gradient(to right, #E94E77, #FF6B6B); /* Warm Pink Gradient */
+    color: white;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn:hover {
+    background: linear-gradient(to right, #FF6B6B, #E94E77);
+    transform: scale(1.05);
+}
+
+/* Welcome Text */
+h1 {
+    font-size: 28px;
+    color: #4A90E2; /* Cool Blue */
+    margin-top: 120px;
+}
+
+p {
+    font-size: 18px;
+    color: #34495E;
+}
+
+/* Get Started Button */
+.GetStarted {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.GetStarted .btn {
+    background: linear-gradient(to right, #4A90E2, #6B99E9); /* Cool Blue Gradient */
+}
+
+.GetStarted .btn:hover {
+    background: linear-gradient(to right, #6B99E9, #4A90E2);
+}

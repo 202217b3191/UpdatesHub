@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,11 +24,14 @@ public class AuthController {
 
     @PostMapping("/register")
     public Map<String, String> registerUser(@RequestBody User user) {
-        if (userRepository.findByUsername(user.getUsername()) != null) {
+        // Check if user already exists
+        boolean userExists = userRepository.findByUsername(user.getUsername()).isPresent();
+        if (userExists) {
             throw new RuntimeException("User already exists");
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));  // Encrypt password
+        // Encrypt password and save user
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
         Map<String, String> response = new HashMap<>();
@@ -39,12 +41,16 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, String> loginUser(@RequestBody User user) {
-        User existingUser = userRepository.findByUsername(user.getUsername());
+        // Fetch user from the database
+        User existingUser = userRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid credentials"));
 
-        if (existingUser == null || !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
+        // Verify password
+        if (!passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
             throw new RuntimeException("Invalid credentials");
         }
 
+        // Generate JWT token
         String token = jwtUtil.generateToken(existingUser.getUsername());
 
         Map<String, String> response = new HashMap<>();
@@ -52,4 +58,3 @@ public class AuthController {
         return response;
     }
 }
-
