@@ -8,7 +8,6 @@ C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\models\
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\security\JwtUtil.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\UpdatesHubApplication.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\security\JwtAuthenticationFilter.java
-C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\config\CorsConfig.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\security\JwtService.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\models\Note.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\repositories\NoteRepository.java

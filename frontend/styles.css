@@ -21,16 +21,18 @@ body {
     margin: 15px auto;
 }
 
+/* Button Container */
 .button-container {
     display: flex;
-    justify-content: space-between; /* Buttons aligned to left & right */
+    justify-content: center; /* ✅ Center-align buttons */
+    gap: 20px; /* ✅ Add space between buttons */
     align-items: center;
-    width: 100%; /* Ensure it spans full width */
+    width: 100%;
     padding: 10px 0;
 }
 
 /* Button Styling */
-.create-note-btn, .Logout {
+.create-note-btn, .logout { /* ✅ Fixed .Logout to .logout */
     text-decoration: none;
     background: linear-gradient(to right, #E94E77, #FF6B6B);
     color: white;
@@ -43,12 +45,12 @@ body {
     transition: all 0.3s ease-in-out;
 }
 
-.create-note-btn:hover, .Logout:hover {
+.create-note-btn:hover, .logout:hover {
     background: linear-gradient(to right, #FF6B6B, #E94E77);
     transform: scale(1.05);
 }
 
-.create-note-btn:active, .Logout:active {
+.create-note-btn:active, .logout:active {
     transform: scale(0.97);
 }
 
@@ -89,7 +91,7 @@ body {
     color: white;
     display: block;
     padding: 10px;
-    background-color: #34495E;
+    background-color: #3B4A59; /* ✅ Slightly lighter than before */
     border-radius: 6px;
     transition: all 0.3s ease-in-out;
 }
@@ -113,5 +115,3 @@ body {
 .content h2 {
     color: #4A90E2;
 }
-
-

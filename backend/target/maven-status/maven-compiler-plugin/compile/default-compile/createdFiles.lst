@@ -1,4 +1,3 @@
-com\updateshub\config\CorsConfig.class
 com\updateshub\controllers\NotesController.class
 com\updateshub\models\Note.class
 com\updateshub\repositories\UserRepository.class

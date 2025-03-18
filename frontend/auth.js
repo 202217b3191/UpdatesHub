@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (registerBtn) {
         registerBtn.addEventListener("click", registerUser);
     }
+
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", logout);
+    }
 });
 
 function loginUser() {
@@ -31,13 +36,13 @@ function loginUser() {
     .then(data => {
         if (data.token) {
             localStorage.setItem("jwtToken", data.token);
-            alert("Login successful!");
-            window.location.href = "index.html";
+            alert("✅ Login successful!");
+            window.location.href = "index.html"; // Redirect after login
         } else {
-            alert("Invalid credentials, please try again.");
+            alert("❌ Invalid credentials, please try again.");
         }
     })
-    .catch(error => console.error("Error:", error));
+    .catch(error => console.error("❌ Error:", error));
 }
 
 function registerUser() {
@@ -58,9 +63,24 @@ function registerUser() {
         body: JSON.stringify({ username, password })
     })
     .then(response => response.json())
-    .then(data => {
-        alert("Registration successful! You can now log in.");
+    .then(() => {
+        alert("✅ Registration successful! You can now log in.");
         window.location.href = "login.html";
     })
-    .catch(error => console.error("Error:", error));
+    .catch(error => console.error("❌ Error:", error));
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const logoutBtn = document.getElementById("logoutBtn");
+    if (logoutBtn) {
+        logoutBtn.addEventListener("click", logout);
+    }
+});
+
+// ✅ Logout Function
+function logout() {
+    localStorage.removeItem("jwtToken");
+    sessionStorage.clear(); 
+    alert("✅ Logged out successfully!");
+    window.location.href = "login.html"; // Redirect to login page
 }
