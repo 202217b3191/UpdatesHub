@@ -16,6 +16,22 @@
     <!-- Notes List -->
     <ul id="notesList"></ul>
 
+    <!-- Review Modal (for rating recall quality) -->
+    <div id="reviewModal" class="modal">
+        <div class="modal-content">
+            <h2>Review Note</h2>
+            <p>How well did you remember the note?</p>
+            <button onclick="rateQuality(5)">Excellent (5)</button>
+            <button onclick="rateQuality(4)">Good (4)</button>
+            <button onclick="rateQuality(3)">Okay (3)</button>
+            <button onclick="rateQuality(2)">Poor (2)</button>
+            <button onclick="rateQuality(1)">Very Poor (1)</button>
+        </div>
+    </div>
+
+    <!-- Logout Button -->
+    <button id="logoutBtn" class="btn">Logout</button>
+
     <script src="MyNotes.js"></script>
 </body>
 </html>

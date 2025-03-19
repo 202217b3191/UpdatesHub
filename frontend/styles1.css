@@ -60,6 +60,9 @@ h2 {
     transition: all 0.3s ease-in-out;
     text-align: center;
     font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .note-item:hover {
@@ -75,4 +78,12 @@ h2 {
     outline: none;
     text-align: center;
     font-weight: bold;
+}
+
+
+/* Next Review Date Styling */
+.next-review {
+    font-size: 14px;
+    color: #BDC3C7;
+    font-style: italic;
 }
