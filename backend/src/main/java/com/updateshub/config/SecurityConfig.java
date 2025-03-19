@@ -49,7 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(new AntPathRequestMatcher("/api/auth/**")).permitAll() // Public auth endpoints
                         .requestMatchers(new AntPathRequestMatcher("/api/notes/**")).authenticated() // Secure notes endpoints
-                        .requestMatchers(new AntPathRequestMatcher("/api/review")).authenticated()
+                        .requestMatchers(new AntPathRequestMatcher("/api/review/**")).authenticated()
                         .requestMatchers(new AntPathRequestMatcher("/public/**")).permitAll() // Public endpoints
                         .requestMatchers(new AntPathRequestMatcher("/api/**")).authenticated()) // Secure API routes
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

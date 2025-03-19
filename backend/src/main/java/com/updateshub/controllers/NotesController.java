@@ -39,7 +39,7 @@ public class NotesController {
 
     // ✅ Save a note (Authenticated Users Only)
     @PostMapping
-    public ResponseEntity<Note> saveNote(@RequestBody Note note, HttpServletRequest request) {
+    public ResponseEntity<?> saveNote(@RequestBody Note note, HttpServletRequest request) {
         try {
             String username = extractUsername(request);
             note.setUsername(username); // Assign note to the user
@@ -51,37 +51,45 @@ public class NotesController {
             Note savedNote = notesRepository.save(note);
             return ResponseEntity.ok(savedNote);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            // Log the exception for debugging purposes
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to save the note. Please check your request data.");
         }
     }
 
     // ✅ Get All Notes of the Logged-In User
     @GetMapping
-    public ResponseEntity<List<Note>> getNotes(HttpServletRequest request) {
+    public ResponseEntity<?> getNotes(HttpServletRequest request) {
         try {
             String username = extractUsername(request);
             List<Note> userNotes = notesRepository.findByUsername(username);
             return ResponseEntity.ok(userNotes);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            // Log the exception for debugging purposes
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("You must be authenticated to view notes.");
         }
     }
 
     // ✅ Get a Specific Note by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Note> getNoteById(@PathVariable String id, HttpServletRequest request) {
+    public ResponseEntity<?> getNoteById(@PathVariable String id, HttpServletRequest request) {
         String username = extractUsername(request);
         Optional<Note> optionalNote = notesRepository.findById(id);
 
         if (optionalNote.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Note not found with the provided ID.");
         }
 
         Note note = optionalNote.get();
 
         // Ensure only the owner of the note can access it
         if (!note.getUsername().equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to view this note.");
         }
 
         return ResponseEntity.ok(note);
@@ -89,18 +97,20 @@ public class NotesController {
 
     // ✅ Update a Note (Title, Content, and Review Details)
     @PutMapping("/{id}")
-    public ResponseEntity<Note> updateNote(@PathVariable String id, @RequestBody Note updatedNote,
-            HttpServletRequest request) {
+    public ResponseEntity<?> updateNote(@PathVariable String id, @RequestBody Note updatedNote,
+                                        HttpServletRequest request) {
         String username = extractUsername(request);
         Note existingNote = notesRepository.findById(id).orElse(null);
 
         if (existingNote == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Note not found with the provided ID.");
         }
 
         // 🔥 Ensure only the owner can update this note
         if (!existingNote.getUsername().equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to update this note.");
         }
 
         // Update fields
@@ -114,18 +124,20 @@ public class NotesController {
 
     // ✅ Mark a Note as Reviewed and Update Review Status
     @PostMapping("/{id}/review")
-    public ResponseEntity<Note> updateReviewStatus(@PathVariable String id, @RequestParam int quality,
-            HttpServletRequest request) {
+    public ResponseEntity<?> updateReviewStatus(@PathVariable String id, @RequestParam int quality,
+                                               HttpServletRequest request) {
         String username = extractUsername(request);
         Note note = notesRepository.findById(id).orElse(null);
 
         if (note == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Note not found with the provided ID.");
         }
 
         // 🔥 Ensure only the owner can review this note
         if (!note.getUsername().equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to review this note.");
         }
 
         // ✅ Apply Spaced Repetition Algorithm
@@ -169,17 +181,19 @@ public class NotesController {
 
     // ✅ Delete a Note
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteNote(@PathVariable String id, HttpServletRequest request) {
+    public ResponseEntity<?> deleteNote(@PathVariable String id, HttpServletRequest request) {
         String username = extractUsername(request);
         Note existingNote = notesRepository.findById(id).orElse(null);
 
         if (existingNote == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Note not found with the provided ID.");
         }
 
         // 🔥 Ensure only the owner can delete this note
         if (!existingNote.getUsername().equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("You are not authorized to delete this note.");
         }
 
         notesRepository.delete(existingNote);

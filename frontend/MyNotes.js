@@ -1,178 +1,158 @@
-document.addEventListener("DOMContentLoaded", function () {
-    loadNotes();
+const API_URL = "http://localhost:8080/api/notes";
 
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", logout);
+// ✅ Save Note
+async function saveNote() {
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+    const token = localStorage.getItem("jwtToken"); // Get stored JWT token
+
+    if (!token) {
+        alert("You are not logged in!");
+        window.location.href = "login.html";
+        return;
     }
 
-    const searchInput = document.getElementById("searchInput");
-    if (searchInput) {
-        searchInput.addEventListener("input", searchNotes);
+    // Prevent saving empty notes
+    if (!title || !content) {
+        alert("Title and content cannot be empty.");
+        return;
     }
-});
 
-// ✅ Load Notes Function
+    try {
+        const response = await fetch(API_URL, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() })
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to save the note.");
+        }
+
+        const data = await response.json();
+        console.log("Note saved:", data);
+
+        alert("Note saved successfully!");
+        document.getElementById("title").value = "";  // Clear input fields
+        document.getElementById("content").value = "";
+
+        loadNotes(); // Reload notes list
+    } catch (error) {
+        alert(error.message);
+        console.error("Error:", error);
+    }
+}
+
+// ✅ Load Notes
 async function loadNotes() {
     const token = localStorage.getItem("jwtToken");
 
     if (!token) {
-        alert("⚠️ Access Denied! Please log in.");
+        alert("You are not logged in!");
         window.location.href = "login.html";
         return;
     }
 
     try {
-        const response = await fetch("http://localhost:8080/api/notes", {
+        const response = await fetch(API_URL, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
 
-        if (response.status === 403) {
-            alert("⛔ Session Expired! Please log in again.");
-            logout(); // Call logout function
-            return;
-        }
-
         if (!response.ok) {
-            throw new Error(`🚨 HTTP error! Status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to load notes.");
         }
 
         const notes = await response.json();
-        displayNotes(notes);
+        const list = document.getElementById("notesList");
+        list.innerHTML = "";  // Clear the existing list
 
-    } catch (error) {
-        console.error("❌ Error:", error);
-        alert("⚠️ Failed to load notes. Please try again.");
-        logout(); // Redirect to login page on critical errors
-    }
-}
+        if (notes.length === 0) {
+            list.innerHTML = "<li>No notes found.</li>";
+            return;
+        }
 
-// ✅ Display Notes Function
-function displayNotes(notes) {
-    const notesList = document.getElementById("notesList");
-    notesList.innerHTML = '';
-
-    notes.forEach(note => {
-        const li = document.createElement('li');
-        li.className = 'note-item';
-        li.id = `note-${note.id}`;
-
-        const noteTitle = document.createElement('span');
-        noteTitle.textContent = note.title;
-
-        const nextReview = document.createElement('span');
-        nextReview.className = 'next-review';
-        nextReview.textContent = `Next Review: ${new Date(note.nextReviewDate).toDateString()}`;
-
-        const reviewButton = document.createElement('button');
-        reviewButton.className = 'review-btn';
-        reviewButton.textContent = 'Review Now';
-        reviewButton.setAttribute('data-note-id', note.id);
-        reviewButton.onclick = () => openReviewModal(note.id);
-
-        li.appendChild(noteTitle);
-        li.appendChild(nextReview);
-        li.appendChild(reviewButton);
-        notesList.appendChild(li);
-    });
-}
-
-// ✅ Open Review Modal
-function openReviewModal(noteId) {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-    modal.setAttribute('role', 'dialog');
-    modal.setAttribute('aria-labelledby', 'modalTitle');
-    modal.innerHTML = `
-        <div class="modal-content">
-            <h3 id="modalTitle">Review Note</h3>
-            <button aria-label="Easy" onclick="rateQuality(1)">Easy</button>
-            <button aria-label="Good" onclick="rateQuality(2)">Good</button>
-            <button aria-label="Hard" onclick="rateQuality(3)">Hard</button>
-            <button aria-label="Close" onclick="closeReviewModal()">Close</button>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-    localStorage.setItem('currentNoteId', noteId);  // Store noteId for later review submission
-}
-
-// ✅ Rate Quality and Submit Review
-async function submitReview(noteId, quality) {
-    const data = { noteId: noteId, quality: quality };
-
-    const response = await fetch('http://localhost:8080/api/review', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
-        },
-        body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-        throw new Error(`🚨 HTTP error! Status: ${response.status}`);
-    }
-
-    return response.json();
-}
-
-function rateQuality(quality) {
-    const noteId = localStorage.getItem('currentNoteId');
-
-    submitReview(noteId, quality)
-        .then(updatedNote => {
-            loadNotes();  // Reload notes after updating the review cycle
-            closeReviewModal();  // Close the review modal
-        })
-        .catch(error => {
-            console.error('❌ Error updating review cycle:', error);
-            alert("⚠️ Failed to update review. Please try again.");
+        notes.forEach(note => {
+            const li = document.createElement("li");
+            li.textContent = `${note.title} (Next Review: ${new Date(note.nextReviewDate).toLocaleDateString()})`; // Display the next review date
+            li.classList.add('note-item');
+            li.style.cursor = "pointer"; // Make it look clickable
+            li.onclick = () => openReviewSection(note); // Handle click to open review section
+            list.appendChild(li);
         });
-}
-
-// ✅ Close Review Modal
-function closeReviewModal() {
-    const modal = document.querySelector('.modal');
-    if (modal) {
-        modal.remove();
+    } catch (error) {
+        alert(error.message);
+        console.error("Error:", error);
     }
-    localStorage.removeItem('currentNoteId');  // Clear the stored noteId
 }
 
-// ✅ Search Notes Function
-async function searchNotes() {
-    const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+// ✅ Open Review Section
+function openReviewSection(note) {
+    // Set the note details in the review section
+    document.getElementById("noteTitle").textContent = note.title;
+    document.getElementById("noteContent").textContent = note.content;
+    document.getElementById("nextReviewDate").textContent = new Date(note.nextReviewDate).toLocaleDateString();
+    document.getElementById("noteDetailsSection").style.display = "block"; // Show the review section
+
+    // Store the note ID in the session so we can submit the review later
+    sessionStorage.setItem("currentNoteId", note.id);
+}
+
+// ✅ Submit Review
+async function submitReview() {
+    const noteId = sessionStorage.getItem("currentNoteId");
+    const quality = document.getElementById("reviewQuality").value;
     const token = localStorage.getItem("jwtToken");
 
-    if (!searchTerm.trim()) {
-        loadNotes(); // Reload notes if the search term is empty
+    if (!token) {
+        alert("You are not logged in!");
+        window.location.href = "login.html";
         return;
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/api/notes/search?q=${searchTerm}`, {
-            method: "GET",
-            headers: { "Authorization": `Bearer ${token}` }
+        const response = await fetch(`${API_URL}/${noteId}/review?quality=${quality}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
         });
 
         if (!response.ok) {
-            throw new Error(`🚨 HTTP error! Status: ${response.status}`);
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Failed to submit review.");
         }
 
-        const notes = await response.json();
-        displayNotes(notes);
-
+        alert("Review submitted successfully!");
+        closeReviewSection(); // Close review section after submission
+        loadNotes(); // Reload notes list
     } catch (error) {
-        console.error("❌ Error:", error);
-        alert("⚠️ Failed to search notes. Please try again.");
+        alert(error.message);
+        console.error("Error:", error);
     }
 }
 
-// ✅ Logout Function
-function logout() {
-    localStorage.removeItem("jwtToken");
-    sessionStorage.clear();
-    window.location.href = "login.html";
+// ✅ Close Review Section
+function closeReviewSection() {
+    document.getElementById("noteDetailsSection").style.display = "none"; // Hide the review section
 }
+
+// ✅ Search Notes
+function searchNotes() {
+    const query = document.getElementById("searchInput").value.trim();
+    const noteItems = document.getElementById("notesList").getElementsByClassName("note-item");
+
+    Array.from(noteItems).forEach(item => {
+        const title = item.textContent.toLowerCase();
+        const isMatch = title.includes(query.toLowerCase());
+        item.style.display = isMatch ? "block" : "none";
+    });
+}
+
+// Load notes when the page is loaded
+window.onload = loadNotes;

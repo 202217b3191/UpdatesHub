@@ -13,38 +13,72 @@ body {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start; /* Aligned to the left */
+    min-height: 100vh;
 }
 
 /* Search Bar at the Top Left */
-#searchInput {
+.search-container {
     position: absolute;
     top: 10px;
     left: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#searchInput {
     width: 200px;
     padding: 8px;
     font-size: 14px;
     border: 1px solid #BDC3C7;
     border-radius: 5px;
     outline: none;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 #searchInput:focus {
     border-color: #4A90E2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
+.search-container button {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.search-container button:hover {
+    background-color: #357ABD;
+    transform: scale(1.05);
+}
+
+.search-container button:active {
+    transform: scale(0.95);
 }
 
 /* Heading at the Top Center */
-h2 {
+h1 {
     text-align: center;
     margin: 20px 0;
     font-size: 24px;
     color: #4A90E2;
+    width: 100%; /* Ensure it spans the full width */
 }
 
-/* Notes List taking full width */
+.NotesList {
+    text-align: left;
+    width: 100%; /* Full width for the Notes List */
+    margin-top: 20px;
+}
+
+/* Notes List */
 #notesList {
-    width: 80%;
-    max-width: 800px;
     list-style-type: none;
     padding: 0;
     margin-top: 10px;
@@ -58,32 +92,129 @@ h2 {
     margin-bottom: 8px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
-    text-align: center;
-    font-weight: bold;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .note-item:hover {
     background: #D6DBDF;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
 
-/* Editable Note Input */
-.note-item input {
-    width: 100%;
-    font-size: 16px;
-    border: none;
-    background: none;
-    outline: none;
-    text-align: center;
-    font-weight: bold;
-}
-
-
-/* Next Review Date Styling */
 .next-review {
     font-size: 14px;
     color: #BDC3C7;
     font-style: italic;
+}
+
+/* Review Note Section */
+#noteDetailsSection {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    width: 100%; /* Full width for better responsiveness */
+    max-width: 800px;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+#noteDetailsSection h2 {
+    font-size: 20px;
+    color: #4A90E2;
+    margin-bottom: 10px;
+}
+
+#noteDetailsSection div {
+    margin-bottom: 10px;
+}
+
+#noteDetailsSection label {
+    font-size: 14px;
+    color: #34495E;
+    margin-right: 10px;
+}
+
+#reviewQuality {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #BDC3C7;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#reviewQuality:focus {
+    border-color: #4A90E2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
+}
+
+#submitReviewBtn {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #4A90E2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+#submitReviewBtn:hover {
+    background-color: #357ABD;
+    transform: scale(1.05);
+}
+
+#submitReviewBtn:active {
+    transform: scale(0.95);
+}
+
+#noteDetailsSection button {
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #BDC3C7;
+    color: #34495E;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+#noteDetailsSection button:hover {
+    background-color: #A6ACAF;
+    transform: scale(1.05);
+}
+
+#noteDetailsSection button:active {
+    transform: scale(0.95);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .search-container {
+        position: static;
+        margin-bottom: 20px;
+        width: 100%;
+        justify-content: center;
+    }
+
+    #searchInput {
+        width: 100%;
+    }
+
+    #noteDetailsSection {
+        width: 100%;
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
 }
