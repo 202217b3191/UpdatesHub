@@ -8,7 +8,7 @@ body {
 }
 
 /* Title */
-.title {
+.title {    
     font-size: 32px;
     font-weight: bold;
     color: #4A90E2; /* Cool Blue */
@@ -114,4 +114,180 @@ body {
 
 .content h2 {
     color: #4A90E2;
+}
+
+/* Updated Notes List */
+#notesList {
+    width: 80%;
+    max-width: 800px;
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+}
+
+.note-item {
+    padding: 12px;
+    background: #ECF0F1;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.note-item:hover {
+    background: #D6DBDF;
+}
+
+/* New Review Button Styling */
+.review-btn {
+    background: #4A90E2;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.review-btn:hover {
+    background: #6B99E9;
+}
+
+.review-btn:active {
+    transform: scale(0.98);
+}
+
+/* Next Review Date */
+.next-review {
+    font-size: 14px;
+    color: #BDC3C7;
+    font-style: italic;
+}
+
+
+
+/* Modal Styles */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000; /* Ensure it sits on top of other content */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    backdrop-filter: blur(5px); /* Adds a blur effect to the background */
+    overflow: auto; /* Ensures the modal content is scrollable if needed */
+}
+
+/* Modal Content Styles */
+.modal-content {
+    background-color: #fff;
+    margin: 10% auto; /* Center the modal vertically */
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%; /* Responsive width */
+    max-width: 500px; /* Maximum width */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+    animation: fadeIn 0.3s ease-in-out; /* Smooth fade-in animation */
+    position: relative; /* For positioning the close button */
+}
+
+/* Modal Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Input & Textarea Styles */
+.input-field {
+    width: 100%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease-in-out;
+    box-sizing: border-box; /* Ensure padding doesn't affect width */
+}
+
+.input-field:focus {
+    border-color: #4A90E2; /* Highlight input on focus */
+    outline: none; /* Remove default outline */
+}
+
+/* Textarea Styling */
+#content {
+    resize: vertical; /* Allows users to resize the textarea vertically */
+    min-height: 150px; /* Minimum height to make it more visible */
+}
+
+/* Button Styles */
+.btn {
+    padding: 12px 24px;
+    background-color: #4A90E2;
+    color: white;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+    width: 100%; /* Make the button full width for better alignment */
+    box-sizing: border-box;
+    margin-top: 20px; /* Add space between input and button */
+}
+
+.btn:hover {
+    background-color: #357ABD; /* Darker shade on hover */
+}
+
+.btn:active {
+    transform: scale(0.98); /* Slight scale-down on click */
+}
+
+/* Close Button for Modal */
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 24px;
+    color: #888;
+    cursor: pointer;
+    transition: color 0.3s ease-in-out;
+}
+
+.close-btn:hover {
+    color: #333; /* Darker color on hover */
+}
+
+/* Responsiveness */
+@media screen and (max-width: 600px) {
+    .modal-content {
+        width: 95%; /* Ensure modal fits within smaller screens */
+        padding: 20px;
+    }
+
+    .btn {
+        font-size: 14px; /* Smaller button font on mobile */
+        padding: 10px 20px; /* Adjust button padding for mobile */
+    }
+
+    .input-field {
+        font-size: 14px; /* Smaller font for input fields on mobile */
+    }
+
+    .modal-content h3 {
+        font-size: 18px; /* Adjust header size for smaller screens */
+    }
 }

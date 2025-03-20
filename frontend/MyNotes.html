@@ -3,18 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Notes - UpdatesHub</title>
+    <title>My Notes</title>
     <link rel="stylesheet" href="styles1.css">
 </head>
 <body>
-    <!-- Search Bar -->
-    <input type="text" id="searchInput" placeholder="🔍 Search..." onkeyup="searchNotes()">
+    <h1>My Notes</h1>
 
-    <!-- Page Title -->
-    <h2>My Notes</h2>
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search notes by title or content..." />
+        <button onclick="searchNotes()">Search</button>
+    </div>
 
     <!-- Notes List -->
-    <ul id="notesList"></ul>
+    <div class="NotesList">
+        <h2>Notes List</h2>
+        <ul id="notesList"></ul>
+    </div>
+
+    <!-- Review Note Section -->
+    <div id="noteDetailsSection" style="display: none;">
+        <h2>Review Note</h2>
+        <div>
+            <strong>Title:</strong> <span id="noteTitle"></span>
+        </div>
+        <div>
+            <strong>Content:</strong> <p id="noteContent"></p>
+        </div>
+        <div>
+            <strong>Next Review:</strong> <span id="nextReviewDate"></span>
+        </div>
+        <div>
+            <label for="reviewQuality">Review Quality:</label>
+            <select id="reviewQuality">
+                <option value="5">Excellent</option>
+                <option value="4">Good</option>
+                <option value="3">Okay</option>
+                <option value="2">Poor</option>
+                <option value="1">Terrible</option>
+            </select>
+        </div>
+        <button id="submitReviewBtn" onclick="submitReview()">Submit Review</button>
+        <button onclick="closeReviewSection()">Close</button>
+    </div>
 
     <script src="MyNotes.js"></script>
 </body>

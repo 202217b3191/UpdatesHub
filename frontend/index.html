@@ -13,7 +13,8 @@
     <hr class="divider">
 
     <div class="button-container">
-        <button class="create-note-btn">Create New Note</button>
+        <!-- Button to open the modal for creating a new note -->
+        <button class="create-note-btn" onclick="openCreateNoteModal()">Create New Note</button>
         <button id="logoutBtn" class="logout">🚪 Logout</button>  <!-- 🔄 Fixed Logout Button -->
     </div>
 
@@ -36,8 +37,20 @@
         </div>
     </div>
 
+    <!-- Modal for Creating New Note -->
+    <div id="createNoteModal" class="modal">
+        <div class="modal-content">
+            <h3>Create a New Note</h3>
+            <input type="text" id="noteTitle" placeholder="Title" required />
+            <textarea id="noteContent" placeholder="Write your note..." required></textarea>
+            <button class="btn" onclick="createNote()">Create Note</button>
+            <button class="btn" onclick="closeCreateNoteModal()">Cancel</button>
+        </div>
+    </div>
+
     <!-- ✅ Include JavaScript File -->
     <script src="auth.js"></script>
+    <script src="index.js"></script>
 
 </body>
 </html>
