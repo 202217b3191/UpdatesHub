@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - UpdatesHub</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+    <hr class="divider">
+    <h1 class="title">Dashboard</h1>
+    <hr class="divider">
+
+    <div class="button-container">
+        <button id="logoutBtn" class="logout">🚪 Logout</button>
+    </div>
+
+    <hr class="divider">
+
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>Navigation</h2>
+            <ul>
+                <li><a href="index.html">🏠 Home</a></li>
+                <li><a href="MyNotes.html">📂 My Notes</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <h2>Tracking Progress</h2>
+            <div id="progress-section">
+                <p>Loading your progress...</p>
+            </div>
+
+            <h2>Upcoming Reviews</h2>
+            <div id="upcoming-reviews">
+                <p>No upcoming reviews.</p>
+            </div>
+
+            <h2>Blackout Schedule</h2>
+            <form id="blackout-form">
+                <input type="text" id="blackout-name" placeholder="Blackout Name" required>
+                <input type="datetime-local" id="blackout-start" required>
+                <input type="datetime-local" id="blackout-end" required>
+                <input type="text" id="blackout-user" placeholder="Applied by" required>
+                <button type="submit">Add Blackout</button>
+            </form>
+
+            <h3>Blackout Windows</h3>
+            <ul id="blackout-list"></ul>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+
+</body>
+</html>

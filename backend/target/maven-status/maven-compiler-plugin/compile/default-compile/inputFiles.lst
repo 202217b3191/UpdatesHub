@@ -1,7 +1,9 @@
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\security\CustomUserDetailsService.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\repositories\BlackoutRepository.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\services\UserDetailsServiceImpl.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\config\SecurityConfig.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\security\LogoutHandlerImpl.java
+C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\models\Blackout.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\repositories\UserRepository.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\controllers\AuthController.java
 C:\Users\chand\Downloads\UpdatesHub\backend\src\main\java\com\updateshub\models\User.java

@@ -5,13 +5,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.updateshub.models.Note;
+import com.updateshub.models.Blackout;
 import com.updateshub.repositories.NoteRepository;
+import com.updateshub.repositories.BlackoutRepository;
 import com.updateshub.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://127.0.0.1:5500") // Allow frontend requests
@@ -21,6 +25,9 @@ public class NotesController {
 
     @Autowired
     private NoteRepository notesRepository;
+
+    @Autowired
+    private BlackoutRepository blackoutRepository;
 
     @Autowired
     private JwtUtil jwtUtil;
@@ -42,8 +49,8 @@ public class NotesController {
     public ResponseEntity<?> saveNote(@RequestBody Note note, HttpServletRequest request) {
         try {
             String username = extractUsername(request);
-            note.setUsername(username); // Assign note to the user
-            note.setNextReviewDate(LocalDateTime.now().plusDays(1)); // Default review in 1 day
+            note.setUsername(username);
+            note.setNextReviewDate(LocalDateTime.now().plusDays(1));
             note.setReviewCount(0);
             note.setEaseFactor(2.5);
             note.setInterval(1);
@@ -51,10 +58,8 @@ public class NotesController {
             Note savedNote = notesRepository.save(note);
             return ResponseEntity.ok(savedNote);
         } catch (Exception e) {
-            // Log the exception for debugging purposes
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body("Failed to save the note. Please check your request data.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to save the note.");
         }
     }
 
@@ -66,10 +71,8 @@ public class NotesController {
             List<Note> userNotes = notesRepository.findByUsername(username);
             return ResponseEntity.ok(userNotes);
         } catch (Exception e) {
-            // Log the exception for debugging purposes
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("You must be authenticated to view notes.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be authenticated to view notes.");
         }
     }
 
@@ -80,40 +83,31 @@ public class NotesController {
         Optional<Note> optionalNote = notesRepository.findById(id);
 
         if (optionalNote.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Note not found with the provided ID.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Note not found.");
         }
 
         Note note = optionalNote.get();
-
-        // Ensure only the owner of the note can access it
         if (!note.getUsername().equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to view this note.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized access.");
         }
 
         return ResponseEntity.ok(note);
     }
 
-    // ✅ Update a Note (Title, Content, and Review Details)
+    // ✅ Update a Note
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateNote(@PathVariable String id, @RequestBody Note updatedNote,
-                                        HttpServletRequest request) {
+    public ResponseEntity<?> updateNote(@PathVariable String id, @RequestBody Note updatedNote, HttpServletRequest request) {
         String username = extractUsername(request);
         Note existingNote = notesRepository.findById(id).orElse(null);
 
         if (existingNote == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Note not found with the provided ID.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Note not found.");
         }
 
-        // 🔥 Ensure only the owner can update this note
         if (!existingNote.getUsername().equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to update this note.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized access.");
         }
 
-        // Update fields
         existingNote.setTitle(updatedNote.getTitle());
         existingNote.setContent(updatedNote.getContent());
         existingNote.setNextReviewDate(updatedNote.getNextReviewDate());
@@ -122,27 +116,21 @@ public class NotesController {
         return ResponseEntity.ok(savedNote);
     }
 
-    // ✅ Mark a Note as Reviewed and Update Review Status
+    // ✅ Mark a Note as Reviewed
     @PostMapping("/{id}/review")
-    public ResponseEntity<?> updateReviewStatus(@PathVariable String id, @RequestParam int quality,
-                                               HttpServletRequest request) {
+    public ResponseEntity<?> updateReviewStatus(@PathVariable String id, @RequestParam int quality, HttpServletRequest request) {
         String username = extractUsername(request);
         Note note = notesRepository.findById(id).orElse(null);
 
         if (note == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Note not found with the provided ID.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Note not found.");
         }
 
-        // 🔥 Ensure only the owner can review this note
         if (!note.getUsername().equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to review this note.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized access.");
         }
 
-        // ✅ Apply Spaced Repetition Algorithm
         updateSpacedRepetition(note, quality);
-
         Note updatedNote = notesRepository.save(note);
         return ResponseEntity.ok(updatedNote);
     }
@@ -153,26 +141,23 @@ public class NotesController {
         int interval = note.getInterval();
         int reviewCount = note.getReviewCount();
 
-        // 🔹 SM-2 Algorithm adjustments based on quality
         if (quality < 3) {
-            interval = 1; // Reset interval if response is poor
+            interval = 1;
         } else {
             if (reviewCount == 0) {
-                interval = 1; // First review in 1 day
+                interval = 1;
             } else if (reviewCount == 1) {
-                interval = 6; // Second review in 6 days
+                interval = 6;
             } else {
-                interval = (int) Math.round(interval * easeFactor); // Future reviews
+                interval = (int) Math.round(interval * easeFactor);
             }
 
-            // Adjust ease factor based on quality response
             easeFactor = easeFactor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
             if (easeFactor < 1.3) {
-                easeFactor = 1.3; // Minimum ease factor
+                easeFactor = 1.3;
             }
         }
 
-        // Update Note object with new values
         note.setReviewCount(reviewCount + 1);
         note.setEaseFactor(easeFactor);
         note.setInterval(interval);
@@ -186,17 +171,52 @@ public class NotesController {
         Note existingNote = notesRepository.findById(id).orElse(null);
 
         if (existingNote == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body("Note not found with the provided ID.");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Note not found.");
         }
 
-        // 🔥 Ensure only the owner can delete this note
         if (!existingNote.getUsername().equals(username)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("You are not authorized to delete this note.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Unauthorized access.");
         }
 
         notesRepository.delete(existingNote);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    // ✅ Get User Progress
+    @GetMapping("/progress")
+    public ResponseEntity<Map<String, Object>> getUserProgress(HttpServletRequest request) {
+        String username = extractUsername(request);
+        List<Note> notes = notesRepository.findByUsername(username);
+
+        int completedReviews = notes.stream().mapToInt(Note::getReviewCount).sum();
+        int totalReviews = notes.size();
+
+        Map<String, Object> progress = new HashMap<>();
+        progress.put("completedReviews", completedReviews);
+        progress.put("totalReviews", totalReviews);
+
+        return ResponseEntity.ok(progress);
+    }
+
+    // ✅ Get Upcoming Reviews
+    @GetMapping("/upcoming-reviews")
+    public ResponseEntity<List<Note>> getUpcomingReviews(HttpServletRequest request) {
+        String username = extractUsername(request);
+        List<Note> upcomingNotes = notesRepository.findByUsernameAndNextReviewDateAfter(username, LocalDateTime.now());
+        return ResponseEntity.ok(upcomingNotes);
+    }
+
+    // ✅ Manage Blackout Schedules
+    @PostMapping("/blackout")
+    public ResponseEntity<String> addBlackout(@RequestBody Blackout blackout, HttpServletRequest request) {
+        String username = extractUsername(request);
+        blackout.setAppliedBy(username);
+        blackoutRepository.save(blackout);
+        return ResponseEntity.ok("Blackout added successfully.");
+    }
+
+    @GetMapping("/blackout")
+    public ResponseEntity<List<Blackout>> getBlackouts() {
+        return ResponseEntity.ok(blackoutRepository.findAll());
     }
 }
