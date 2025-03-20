@@ -1,5 +1,5 @@
-// ✅ Function to load upcoming reviews
 async function loadUpcomingReviews() {
+    console.log("🟢 Loading upcoming reviews...");
     const token = localStorage.getItem("jwtToken");
 
     if (!token) {
@@ -11,6 +11,7 @@ async function loadUpcomingReviews() {
     console.log("🟢 Token found:", token);
 
     try {
+        console.log("🟢 Making request to /api/upcoming-reviews...");
         const response = await fetch("http://localhost:8080/api/upcoming-reviews", {
             method: "GET",
             headers: {
@@ -21,11 +22,15 @@ async function loadUpcomingReviews() {
 
         console.log(`🔹 Response status for upcoming reviews: ${response.status}`);
 
-        if (response.status === 403) {
-            console.warn("🚨 Access forbidden! Logging out user.");
+        if (response.status === 401 || response.status === 403) {
+            console.warn("🚨 Unauthorized! Logging out user.");
             localStorage.removeItem("jwtToken");
             window.location.href = "login.html";
             return;
+        }
+
+        if (!response.ok) {
+            throw new Error(`🚨 HTTP Error! Status: ${response.status}`);
         }
 
         const data = await response.json();
@@ -34,11 +39,12 @@ async function loadUpcomingReviews() {
         // ✅ TODO: Update the UI to display upcoming reviews
     } catch (error) {
         console.error("❌ Error loading upcoming reviews:", error);
+        alert("⚠️ Failed to load upcoming reviews. Please try again.");
     }
 }
 
-// ✅ Function to load blackout schedules
 async function loadBlackouts() {
+    console.log("🟢 Loading blackouts...");
     const token = localStorage.getItem("jwtToken");
 
     if (!token) {
@@ -48,6 +54,7 @@ async function loadBlackouts() {
     }
 
     try {
+        console.log("🟢 Making request to /api/blackout...");
         const response = await fetch("http://localhost:8080/api/blackout", {
             method: "GET",
             headers: {
@@ -58,8 +65,8 @@ async function loadBlackouts() {
 
         console.log(`🔹 Response status for blackouts: ${response.status}`);
 
-        if (response.status === 403) {
-            console.warn("🚨 Access forbidden! Logging out user.");
+        if (response.status === 401 || response.status === 403) {
+            console.warn("🚨 Unauthorized! Logging out user.");
             localStorage.removeItem("jwtToken");
             window.location.href = "login.html";
             return;
@@ -75,23 +82,6 @@ async function loadBlackouts() {
         // ✅ TODO: Update the UI to display blackouts
     } catch (error) {
         console.error("❌ Error loading blackouts:", error);
+        alert("⚠️ Failed to load blackout schedules. Please try again.");
     }
 }
-
-// ✅ Load data when the dashboard opens
-document.addEventListener("DOMContentLoaded", () => {
-    const token = localStorage.getItem("jwtToken");
-
-    if (!token) {
-        console.warn("⚠️ No JWT token found. Redirecting to login...");
-        setTimeout(() => {
-            window.location.href = "login.html";
-        }, 1000); // Delay to avoid instant redirection
-        return;
-    }
-
-    console.log("🟢 Token found:", token);
-    loadUpcomingReviews();
-    loadBlackouts();
-});
-
