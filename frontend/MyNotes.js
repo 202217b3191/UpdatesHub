@@ -1,53 +1,10 @@
-const API_URL = "http://localhost:8080/api/notes";
+// ✅ Define API_URL at the top
+const API_URL = "http://localhost:8080/api/notes"; // Change this if your backend URL is different
 
-// ✅ Save Note
-async function saveNote() {
-    const title = document.getElementById("title").value.trim();
-    const content = document.getElementById("content").value.trim();
-    const token = localStorage.getItem("jwtToken"); // Get stored JWT token
+// ✅ Load Notes on Page Load
+window.onload = loadNotes;
 
-    if (!token) {
-        alert("You are not logged in!");
-        window.location.href = "login.html";
-        return;
-    }
-
-    // Prevent saving empty notes
-    if (!title || !content) {
-        alert("Title and content cannot be empty.");
-        return;
-    }
-
-    try {
-        const response = await fetch(API_URL, {
-            method: "POST",
-            headers: { 
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to save the note.");
-        }
-
-        const data = await response.json();
-        console.log("Note saved:", data);
-
-        alert("Note saved successfully!");
-        document.getElementById("title").value = "";  // Clear input fields
-        document.getElementById("content").value = "";
-
-        loadNotes(); // Reload notes list
-    } catch (error) {
-        alert(error.message);
-        console.error("Error:", error);
-    }
-}
-
-// ✅ Load Notes
+// ✅ Load Notes (Includes Edit and Delete Buttons)
 async function loadNotes() {
     const token = localStorage.getItem("jwtToken");
 
@@ -64,13 +21,18 @@ async function loadNotes() {
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to load notes.");
+            throw new Error("Failed to load notes.");
         }
 
         const notes = await response.json();
         const list = document.getElementById("notesList");
-        list.innerHTML = "";  // Clear the existing list
+
+        if (!list) {
+            console.error("Error: notesList element not found.");
+            return;
+        }
+
+        list.innerHTML = "";
 
         if (notes.length === 0) {
             list.innerHTML = "<li>No notes found.</li>";
@@ -79,80 +41,97 @@ async function loadNotes() {
 
         notes.forEach(note => {
             const li = document.createElement("li");
-            li.textContent = `${note.title} (Next Review: ${new Date(note.nextReviewDate).toLocaleDateString()})`; // Display the next review date
-            li.classList.add('note-item');
-            li.style.cursor = "pointer"; // Make it look clickable
-            li.onclick = () => openReviewSection(note); // Handle click to open review section
+            li.innerHTML = `
+                ${note.title} (Next Review: ${new Date(note.nextReviewDate).toLocaleDateString()})
+                <button onclick="editNote('${note.id}', '${note.title.replace(/'/g, "\\'")}', '${note.content.replace(/'/g, "\\'")}')">✏️ Edit</button>
+                <button onclick="deleteNote('${note.id}')">❌ Delete</button>
+            `;
             list.appendChild(li);
         });
     } catch (error) {
+        console.error("Error loading notes:", error);
         alert(error.message);
-        console.error("Error:", error);
     }
 }
 
-// ✅ Open Review Section
-function openReviewSection(note) {
-    // Set the note details in the review section
-    document.getElementById("noteTitle").textContent = note.title;
-    document.getElementById("noteContent").textContent = note.content;
-    document.getElementById("nextReviewDate").textContent = new Date(note.nextReviewDate).toLocaleDateString();
-    document.getElementById("noteDetailsSection").style.display = "block"; // Show the review section
+// ✅ Edit Note
+function editNote(id, title, content) {
+    const editSection = document.getElementById("editNoteSection");
+    const titleInput = document.getElementById("editTitle");
+    const contentInput = document.getElementById("editContent");
 
-    // Store the note ID in the session so we can submit the review later
-    sessionStorage.setItem("currentNoteId", note.id);
+    if (!editSection || !titleInput || !contentInput) {
+        console.error("Error: Edit note section elements not found.");
+        return;
+    }
+
+    editSection.style.display = "block";
+    titleInput.value = title;
+    contentInput.value = content;
+    sessionStorage.setItem("editNoteId", id);
 }
 
-// ✅ Submit Review
-async function submitReview() {
-    const noteId = sessionStorage.getItem("currentNoteId");
-    const quality = document.getElementById("reviewQuality").value;
+// ✅ Update Note
+async function updateNote() {
+    const noteId = sessionStorage.getItem("editNoteId");
+    const title = document.getElementById("editTitle")?.value.trim();
+    const content = document.getElementById("editContent")?.value.trim();
     const token = localStorage.getItem("jwtToken");
 
-    if (!token) {
-        alert("You are not logged in!");
-        window.location.href = "login.html";
+    if (!noteId || !title || !content) {
+        alert("Title and content cannot be empty.");
         return;
     }
 
     try {
-        const response = await fetch(`${API_URL}/${noteId}/review?quality=${quality}`, {
-            method: "POST",
+        const response = await fetch(`${API_URL}/${noteId}`, {
+            method: "PUT",
             headers: {
+                "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
-            }
+            },
+            body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() })
         });
 
         if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || "Failed to submit review.");
+            throw new Error("Failed to update note.");
         }
 
-        alert("Review submitted successfully!");
-        closeReviewSection(); // Close review section after submission
-        loadNotes(); // Reload notes list
+        alert("Note updated successfully!");
+        closeEditSection();
+        loadNotes();
     } catch (error) {
+        console.error("Error updating note:", error);
         alert(error.message);
-        console.error("Error:", error);
     }
 }
 
-// ✅ Close Review Section
-function closeReviewSection() {
-    document.getElementById("noteDetailsSection").style.display = "none"; // Hide the review section
+// ✅ Close Edit Section
+function closeEditSection() {
+    const editSection = document.getElementById("editNoteSection");
+    if (editSection) editSection.style.display = "none";
 }
 
-// ✅ Search Notes
-function searchNotes() {
-    const query = document.getElementById("searchInput").value.trim();
-    const noteItems = document.getElementById("notesList").getElementsByClassName("note-item");
+// ✅ Delete Note
+async function deleteNote(noteId) {
+    const token = localStorage.getItem("jwtToken");
 
-    Array.from(noteItems).forEach(item => {
-        const title = item.textContent.toLowerCase();
-        const isMatch = title.includes(query.toLowerCase());
-        item.style.display = isMatch ? "block" : "none";
-    });
+    if (!confirm("Are you sure you want to delete this note?")) return;
+
+    try {
+        const response = await fetch(`${API_URL}/${noteId}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to delete note.");
+        }
+
+        alert("Note deleted successfully!");
+        loadNotes();
+    } catch (error) {
+        console.error("Error deleting note:", error);
+        alert(error.message);
+    }
 }
-
-// Load notes when the page is loaded
-window.onload = loadNotes;

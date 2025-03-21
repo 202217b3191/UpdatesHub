@@ -1,4 +1,4 @@
-/* Reset default margin and padding */
+/* ✅ Reset default margin, padding, and font */
 * {
     margin: 0;
     padding: 0;
@@ -6,29 +6,29 @@
     font-family: 'Poppins', sans-serif;
 }
 
-/* Full Page Styling */
+/* ✅ Full Page Styling */
 body {
     background-color: #F5F7FA;
     color: #34495E;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* Aligned to the left */
+    align-items: center; /* Centered content */
     min-height: 100vh;
 }
 
-/* Search Bar at the Top Left */
+/* ✅ Search Bar (Top Left) */
 .search-container {
-    position: absolute;
-    top: 10px;
-    left: 20px;
+    width: 100%;
     display: flex;
     align-items: center;
+    justify-content: flex-start; /* Align to left */
     gap: 10px;
+    margin-bottom: 10px;
 }
 
 #searchInput {
-    width: 200px;
+    width: 250px;
     padding: 8px;
     font-size: 14px;
     border: 1px solid #BDC3C7;
@@ -62,29 +62,31 @@ body {
     transform: scale(0.95);
 }
 
-/* Heading at the Top Center */
+/* ✅ Heading (Top Center) */
 h1 {
     text-align: center;
-    margin: 20px 0;
-    font-size: 24px;
+    font-size: 26px;
     color: #4A90E2;
-    width: 100%; /* Ensure it spans the full width */
+    width: 100%;
+    margin: 10px 0 20px;
 }
 
+/* ✅ Notes List */
 .NotesList {
     text-align: left;
-    width: 100%; /* Full width for the Notes List */
+    width: 100%;
+    max-width: 800px; /* Limit width for readability */
     margin-top: 20px;
 }
 
-/* Notes List */
+/* ✅ Notes Display */
 #notesList {
     list-style-type: none;
     padding: 0;
     margin-top: 10px;
 }
 
-/* Note Item */
+/* ✅ Note Item */
 .note-item {
     padding: 12px;
     background: #ECF0F1;
@@ -104,20 +106,21 @@ h1 {
     transform: translateY(-2px);
 }
 
+/* ✅ Note's Review Date */
 .next-review {
     font-size: 14px;
     color: #BDC3C7;
     font-style: italic;
 }
 
-/* Review Note Section */
+/* ✅ Review Note Section */
 #noteDetailsSection {
     background: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
-    width: 100%; /* Full width for better responsiveness */
+    width: 100%;
     max-width: 800px;
     transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
@@ -138,6 +141,7 @@ h1 {
     margin-right: 10px;
 }
 
+/* ✅ Review Quality Dropdown */
 #reviewQuality {
     padding: 8px;
     font-size: 14px;
@@ -152,15 +156,19 @@ h1 {
     box-shadow: 0 0 5px rgba(74, 144, 226, 0.5);
 }
 
-#submitReviewBtn {
+/* ✅ Buttons */
+button {
     padding: 8px 12px;
     font-size: 14px;
-    background-color: #4A90E2;
-    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+}
+
+#submitReviewBtn {
+    background-color: #4A90E2;
+    color: white;
 }
 
 #submitReviewBtn:hover {
@@ -173,14 +181,8 @@ h1 {
 }
 
 #noteDetailsSection button {
-    padding: 8px 12px;
-    font-size: 14px;
     background-color: #BDC3C7;
     color: #34495E;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
 }
 
 #noteDetailsSection button:hover {
@@ -192,29 +194,28 @@ h1 {
     transform: scale(0.95);
 }
 
-/* Responsive Design */
+/* ✅ Responsive Design */
 @media (max-width: 768px) {
     body {
         padding: 10px;
     }
 
     .search-container {
-        position: static;
-        margin-bottom: 20px;
+        flex-direction: column;
+        align-items: center;
         width: 100%;
-        justify-content: center;
     }
 
     #searchInput {
         width: 100%;
     }
 
+    h1 {
+        font-size: 22px;
+    }
+
     #noteDetailsSection {
         width: 100%;
         padding: 15px;
-    }
-
-    h1 {
-        font-size: 20px;
     }
 }

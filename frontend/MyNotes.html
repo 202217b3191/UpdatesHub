@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Notes</title>
     <link rel="stylesheet" href="styles1.css">
 </head>
+
 <body>
     <h1>My Notes</h1>
 
@@ -19,6 +21,14 @@
     <div class="NotesList">
         <h2>Notes List</h2>
         <ul id="notesList"></ul>
+        <div id="editNoteSection" style="display: none;">
+            <h2>Edit Note</h2>
+            <input type="text" id="editTitle" placeholder="Title">
+            <textarea id="editContent" placeholder="Content"></textarea>
+            <button onclick="updateNote()">Update</button>
+            <button onclick="closeEditSection()">Cancel</button>
+        </div>
+
     </div>
 
     <!-- Review Note Section -->
@@ -28,7 +38,8 @@
             <strong>Title:</strong> <span id="noteTitle"></span>
         </div>
         <div>
-            <strong>Content:</strong> <p id="noteContent"></p>
+            <strong>Content:</strong>
+            <p id="noteContent"></p>
         </div>
         <div>
             <strong>Next Review:</strong> <span id="nextReviewDate"></span>
@@ -49,4 +60,5 @@
 
     <script src="MyNotes.js"></script>
 </body>
+
 </html>
