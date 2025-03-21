@@ -20,7 +20,7 @@ function loginUser() {
     const passwordInput = document.getElementById("loginPassword");
 
     if (!usernameInput || !passwordInput) {
-        console.error("Login input fields not found.");
+        console.error("❌ Login input fields not found.");
         return;
     }
 
@@ -35,9 +35,9 @@ function loginUser() {
     .then(response => response.json())
     .then(data => {
         if (data.token) {
-            localStorage.setItem("jwtToken", data.token);
+            localStorage.setItem("jwtToken", data.token); // ✅ Keep token name consistent
             alert("✅ Login successful!");
-            window.location.href = "index.html"; // Redirect after login
+            window.location.href = "index.html"; // Redirect to homepage
         } else {
             alert("❌ Invalid credentials, please try again.");
         }
@@ -50,7 +50,7 @@ function registerUser() {
     const passwordInput = document.getElementById("registerPassword");
 
     if (!usernameInput || !passwordInput) {
-        console.error("Register input fields not found.");
+        console.error("❌ Register input fields not found.");
         return;
     }
 
@@ -70,16 +70,9 @@ function registerUser() {
     .catch(error => console.error("❌ Error:", error));
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", logout);
-    }
-});
-
 // ✅ Logout Function
 function logout() {
-    localStorage.removeItem("jwtToken");
+    localStorage.removeItem("jwtToken"); // ✅ Keep token name consistent
     sessionStorage.clear(); 
     alert("✅ Logged out successfully!");
     window.location.href = "login.html"; // Redirect to login page
