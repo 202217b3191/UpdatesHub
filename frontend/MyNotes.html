@@ -6,56 +6,69 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Notes</title>
     <link rel="stylesheet" href="styles1.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
 <body>
-    <h1>My Notes</h1>
+    <div class="container">
+        <h1>My Notes</h1>
 
-    <!-- Search Bar -->
-    <div class="search-container">
-        <input type="text" id="searchInput" placeholder="Search notes by title or content..." />
-        <button onclick="searchNotes()">Search</button>
-    </div>
-
-    <!-- Notes List -->
-    <div class="NotesList">
-        <h2>Notes List</h2>
-        <ul id="notesList"></ul>
-        <div id="editNoteSection" style="display: none;">
-            <h2>Edit Note</h2>
-            <input type="text" id="editTitle" placeholder="Title">
-            <textarea id="editContent" placeholder="Content"></textarea>
-            <button onclick="updateNote()">Update</button>
-            <button onclick="closeEditSection()">Cancel</button>
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="searchInput" placeholder="Search notes..." />
+            <button id="searchButton">
+                <i class="fas fa-search"></i> Search
+            </button>
         </div>
 
-    </div>
+        <!-- Notes List -->
+        <div class="notes-list-container">
+            <h2>Notes List</h2>
+            <ul id="notesList">
+                <!-- Notes will be dynamically added here -->
+            </ul>
+        </div>
 
-    <!-- Review Note Section -->
-    <div id="noteDetailsSection" style="display: none;">
-        <h2>Review Note</h2>
-        <div>
-            <strong>Title:</strong> <span id="noteTitle"></span>
+        <!-- Modal for Viewing & Managing Notes -->
+        <div id="noteModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeModalBtn">×</span>
+                <h2 id="modalTitle"></h2>
+                <p id="modalContent"></p>
+                <p><strong>Next Review:</strong> <span id="modalNextReview"></span></p>
+
+                <!-- Edit Section -->
+                <div id="editNoteSection">
+                    <h3>Edit Note</h3>
+                    <input type="text" id="editTitle" placeholder="Title">
+                    <textarea id="editContent" placeholder="Content"></textarea>
+                </div>
+
+                <!-- Review Section -->
+                <div id="reviewSection">
+                    <h3>Submit Review</h3>
+                    <label for="reviewQuality">Review Quality:</label>
+                    <select id="reviewQuality">
+                        <option value="5">Excellent</option>
+                        <option value="4">Good</option>
+                        <option value="3">Okay</option>
+                        <option value="2">Poor</option>
+                        <option value="1">Terrible</option>
+                    </select>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="modal-buttons">
+                    <button id="editButton">Edit</button>
+                    <button id="updateButton">Update</button>
+                    <button id="deleteButton">Delete</button>
+                    <button id="submitReviewButton">Submit Review</button>
+                    <button id="cancelButton">Cancel</button>
+                </div>
+            </div>
         </div>
-        <div>
-            <strong>Content:</strong>
-            <p id="noteContent"></p>
-        </div>
-        <div>
-            <strong>Next Review:</strong> <span id="nextReviewDate"></span>
-        </div>
-        <div>
-            <label for="reviewQuality">Review Quality:</label>
-            <select id="reviewQuality">
-                <option value="5">Excellent</option>
-                <option value="4">Good</option>
-                <option value="3">Okay</option>
-                <option value="2">Poor</option>
-                <option value="1">Terrible</option>
-            </select>
-        </div>
-        <button id="submitReviewBtn" onclick="submitReview()">Submit Review</button>
-        <button onclick="closeReviewSection()">Close</button>
     </div>
 
     <script src="MyNotes.js"></script>

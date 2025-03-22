@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - UpdatesHub</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="dashboard.css">
+    <!-- Removed dashboard.css link, styles are now in styles.css -->
 </head>
 <body>
 
@@ -33,18 +33,20 @@
         <div class="content">
             <h2>Tracking Progress</h2>
             <div id="progress-section">
-                <p>Loading your progress...</p>
+                <p>Loading your progress...</p> <!-- Placeholder, you'll likely load progress similarly to reviews -->
             </div>
 
             <h2>Upcoming Reviews</h2>
             <div id="upcoming-reviews">
-                <p>No upcoming reviews.</p>
+                <p>Loading upcoming reviews...</p>
             </div>
 
             <h2>Blackout Schedule</h2>
             <form id="blackout-form">
                 <input type="text" id="blackout-name" placeholder="Blackout Name" required>
+                <label for="blackout-start">Start Time:</label>
                 <input type="datetime-local" id="blackout-start" required>
+                <label for="blackout-end">End Time:</label>
                 <input type="datetime-local" id="blackout-end" required>
                 <input type="text" id="blackout-user" placeholder="Applied by" required>
                 <button type="submit">Add Blackout</button>
@@ -55,7 +57,7 @@
         </div>
     </div>
 
-    <script src="auth.js"></script>
+    <script src="auth.js"></script> <!--  Keep auth.js if it contains authentication-related functions -->
     <script src="dashboard.js"></script>
 
 </body>
