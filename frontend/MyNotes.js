@@ -6,10 +6,10 @@ function encodeHTML(str) {
     for (let i = 0; i < str.length; i++) {
         let char = str[i];
         switch (char) {
-            case '<': encoded += '<'; break;
-            case '>': encoded += '>'; break;
+            case '<': encoded += '<'; break; // Corrected: <
+            case '>': encoded += '>'; break; // Corrected: >
             case '"': encoded += '"'; break;
-            case "'": encoded += '&#39;'; break;
+            case "'": encoded += '&#39'; break;
             case '&': encoded += '&'; break;
             default: encoded += char;
         }
@@ -17,27 +17,27 @@ function encodeHTML(str) {
     return encoded;
 }
 
-// ✅ Load Notes on Page Load
-window.addEventListener("load", loadNotes);
+// ✅ Load Notes on Page Load - Use DOMContentLoaded, not load
+document.addEventListener("DOMContentLoaded", loadNotes); // Corrected: DOMContentLoaded
 
 // ✅ Load Notes (Updated for Modal View)
 async function loadNotes() {
     const token = localStorage.getItem("jwtToken");
 
-    if (!token) {
-        alert("You are not logged in!");
-        window.location.href = "login.html";
-        return;
-    }
+    //  No need for token check/redirect here, auth.js handles it.
 
     try {
         const response = await fetch(API_URL, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
-
+		if (response.status === 401 || response.status === 403) {
+            alert("Unauthorized. Please log in again.");
+            return;  // auth.js will handle redirect
+        }
         if (!response.ok) {
-            throw new Error(`Failed to load notes: ${response.status}`);
+              const errorData = await response.json();
+            throw new Error(`Failed to load notes: ${response.status} - ${errorData.message || 'Unknown error'}`);
         }
 
         const notes = await response.json();
@@ -61,12 +61,12 @@ async function loadNotes() {
 
             const encodedTitle = encodeHTML(note.title);
             const encodedContent = encodeHTML(note.content);
-
+            const nextReviewDate = note.nextReview ? new Date(note.nextReview).toLocaleDateString() : 'N/A'; // Handle potentially null dates
             li.innerHTML = `
-                <span class="note-title" data-note-id="${note.id}" data-note-title="${encodedTitle}" data-note-content="${encodedContent}" data-note-next-review="${note.nextReviewDate}">
+                <span class="note-title" data-note-id="${note.id}" data-note-title="${encodedTitle}" data-note-content="${encodedContent}" data-note-next-review="${nextReviewDate}">
                     ${encodedTitle}
                 </span>
-                <span class="next-review">Next Review: ${new Date(note.nextReviewDate).toLocaleDateString()}</span>
+                <span class="next-review">Next Review: ${nextReviewDate}</span>
             `;
 
             list.appendChild(li);
@@ -98,7 +98,7 @@ function openNoteModal(id, title, content, nextReviewDate) {
 
     if (modalTitle) modalTitle.innerText = decodeHTML(title);
     if (modalContent) modalContent.innerText = decodeHTML(content);
-    if (modalNextReview) modalNextReview.innerText = new Date(nextReviewDate).toLocaleDateString();
+    if (modalNextReview) modalNextReview.innerText = nextReviewDate; // No need to re-parse the date
     if (editTitleInput) editTitleInput.value = decodeHTML(title); // Pre-fill edit fields
     if (editContentTextarea) editContentTextarea.value = decodeHTML(content);
 
@@ -147,11 +147,16 @@ async function updateNote() {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() })
+            body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() }) //  Keep sending nextReviewDate
         });
-
+		if (response.status === 401 || response.status === 403) {
+            alert("Unauthorized. Please log in again.");
+             // auth.js handles redirect
+             return;
+        }
         if (!response.ok) {
-            throw new Error(`Failed to update note: ${response.status}`);
+              const errorData = await response.json();
+            throw new Error(`Failed to update note: ${response.status} - ${errorData.message || 'Unknown error'}`);
         }
 
         alert("Note updated successfully!");
@@ -178,8 +183,14 @@ async function deleteNote() {
             headers: { "Authorization": `Bearer ${token}` }
         });
 
+		if (response.status === 401 || response.status === 403) {
+            alert("Unauthorized. Please log in again.");
+             // auth.js handles redirect
+             return;
+        }
         if (!response.ok) {
-            throw new Error(`Failed to delete note: ${response.status}`);
+              const errorData = await response.json();
+            throw new Error(`Failed to delete note: ${response.status} - ${errorData.message || 'Unknown error'}`);
         }
 
         alert("Note deleted successfully!");
@@ -191,7 +202,6 @@ async function deleteNote() {
     }
 }
 
-// ✅ Submit Review (Spaced Repetition)
 // ✅ Submit Review (Spaced Repetition)
 document.getElementById("submitReviewButton").addEventListener("click", submitReview);
 
@@ -205,23 +215,27 @@ async function submitReview() {
         return;
     }
 
-    console.log("Submitting review with quality:", quality, "for note ID:", noteId); // Add this line
-    console.log("Token:", token); // Add this line
+    console.log("Submitting review with quality:", quality, "for note ID:", noteId);
+    console.log("Token:", token);
 
     try {
-        const response = await fetch(`${API_URL}/${noteId}/review?quality=${quality}`, { // Changed URL
-            method: "POST",
+        const response = await fetch(`${API_URL}/${noteId}/review?quality=${quality}`, { //  Corrected URL
+            method: "POST", // Corrected: Use POST
             headers: {
-                // "Content-Type": "application/json", // Removed Content-Type
+                // "Content-Type": "application/json",  // No Content-Type needed for query parameters
                 "Authorization": `Bearer ${token}`
             },
-            // body: JSON.stringify({ quality: parseInt(quality) }) // Removed body
+            // No body needed for query parameters
         });
-
-        if (!response.ok) {
-            throw new Error(`Failed to submit review: ${response.status}`);
+		if (response.status === 401 || response.status === 403) {
+            alert("Unauthorized. Please log in again.");
+             // auth.js handles redirect
+             return;
         }
-
+        if (!response.ok) {
+              const errorData = await response.json();
+            throw new Error(`Failed to submit review: ${response.status} - ${errorData.message || 'Unknown error'}`);
+        }
         alert("Review submitted successfully!");
         closeModal();
         loadNotes();

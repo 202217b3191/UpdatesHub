@@ -1,3 +1,4 @@
+// NoteController.java (No major changes, but added logging and minor cleanup)
 package com.updateshub.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,7 @@ import com.updateshub.models.Note;
 import com.updateshub.models.Blackout;
 import com.updateshub.repositories.NoteRepository;
 import com.updateshub.repositories.BlackoutRepository;
-import com.updateshub.security.JwtUtil;
+import com.updateshub.security.JwtService; // Use unified JwtService
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://127.0.0.1:5500")
+@CrossOrigin(origins = {"http://127.0.0.1:5500","http://localhost:5500"}) // Added origins in annotation
 @RestController
 @RequestMapping("/api/notes")
 public class NotesController {
@@ -34,9 +35,9 @@ public class NotesController {
     private BlackoutRepository blackoutRepository;
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private JwtService jwtService; // Use unified JwtService
 
-    // 🔹 Helper function to extract username from JWT and log Authorization header
+    // Helper function to extract username from JWT and log Authorization header
     private String extractUsername(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
@@ -45,12 +46,12 @@ public class NotesController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
         }
 
-        logger.info("Authorization Header: {}", authHeader); // ✅ Log the header
+        logger.info("Authorization Header: {}", authHeader); // Log the header
         String token = authHeader.substring(7);
-        return jwtUtil.extractUsername(token);
+        return jwtService.extractUsername(token);
     }
 
-    // ✅ Save a note (Authenticated Users Only)
+    // Save a note (Authenticated Users Only)
     @PostMapping
     public ResponseEntity<?> saveNote(@RequestBody Note note, HttpServletRequest request) {
         try {
@@ -69,7 +70,7 @@ public class NotesController {
         }
     }
 
-    // ✅ Get All Notes of the Logged-In User
+    // Get All Notes of the Logged-In User
     @GetMapping
     public ResponseEntity<?> getNotes(HttpServletRequest request) {
         try {
@@ -82,7 +83,7 @@ public class NotesController {
         }
     }
 
-    // ✅ Get a Specific Note by ID
+    // Get a Specific Note by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getNoteById(@PathVariable String id, HttpServletRequest request) {
         String username = extractUsername(request);
@@ -100,7 +101,7 @@ public class NotesController {
         return ResponseEntity.ok(note);
     }
 
-    // ✅ Update a Note
+    // Update a Note
     @PutMapping("/{id}")
     public ResponseEntity<?> updateNote(@PathVariable String id, @RequestBody Note updatedNote, HttpServletRequest request) {
         String username = extractUsername(request);
@@ -122,7 +123,7 @@ public class NotesController {
         return ResponseEntity.ok(savedNote);
     }
 
-    // ✅ Mark a Note as Reviewed
+    // Mark a Note as Reviewed
     @PostMapping("/{id}/review")
     public ResponseEntity<?> updateReviewStatus(@PathVariable String id, @RequestParam int quality, HttpServletRequest request) {
         String username = extractUsername(request);
@@ -141,7 +142,7 @@ public class NotesController {
         return ResponseEntity.ok(updatedNote);
     }
 
-    // ✅ Spaced Repetition Algorithm
+    // Spaced Repetition Algorithm
     private void updateSpacedRepetition(Note note, int quality) {
         double easeFactor = note.getEaseFactor();
         int interval = note.getInterval();
@@ -170,7 +171,7 @@ public class NotesController {
         note.setNextReviewDate(LocalDateTime.now().plusDays(interval));
     }
 
-    // ✅ Delete a Note
+    // Delete a Note
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteNote(@PathVariable String id, HttpServletRequest request) {
         String username = extractUsername(request);
@@ -188,18 +189,18 @@ public class NotesController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
-    // ✅ Get User Progress
+      // Get User Progress
     @GetMapping("/progress")
     public ResponseEntity<Map<String, Object>> getUserProgress(HttpServletRequest request) {
         String username = extractUsername(request);
         List<Note> notes = notesRepository.findByUsername(username);
 
         int completedReviews = notes.stream().mapToInt(Note::getReviewCount).sum();
-        int totalReviews = notes.size();
+        int totalNotes = notes.size(); // Corrected variable name
 
         Map<String, Object> progress = new HashMap<>();
         progress.put("completedReviews", completedReviews);
-        progress.put("totalReviews", totalReviews);
+        progress.put("totalNotes", totalNotes); // Use totalNotes
 
         return ResponseEntity.ok(progress);
     }
@@ -211,18 +212,23 @@ public class NotesController {
         List<Note> upcomingNotes = notesRepository.findByUsernameAndNextReviewDateAfter(username, LocalDateTime.now());
         return ResponseEntity.ok(upcomingNotes);
     }
-
     // ✅ Manage Blackout Schedules
     @PostMapping("/blackout")
-    public ResponseEntity<String> addBlackout(@RequestBody Blackout blackout, HttpServletRequest request) {
+    public ResponseEntity<?> addBlackout(@RequestBody Blackout blackout, HttpServletRequest request) {
+      try{
         String username = extractUsername(request);
-        blackout.setAppliedBy(username);
-        blackoutRepository.save(blackout);
-        return ResponseEntity.ok("Blackout added successfully.");
+        blackout.setUsername(username); // Corrected attribute name
+        Blackout savedBlackout = blackoutRepository.save(blackout); // Save and get the result
+        return ResponseEntity.ok(savedBlackout);
+      }  catch (Exception e) {
+            logger.error("Failed to save the note", e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to save the note.");
+        }
     }
 
     @GetMapping("/blackout")
     public ResponseEntity<List<Blackout>> getBlackouts() {
+
         return ResponseEntity.ok(blackoutRepository.findAll());
     }
 }

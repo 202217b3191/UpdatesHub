@@ -16,17 +16,12 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final SecretKey SECRET_KEY;
+    private final SecretKey secretKey;
 
+    //  Inject the Base64-encoded secret from application.properties
     public JwtService(@Value("${jwt.secret}") String secret) {
-        byte[] decodedKey = Base64.getDecoder().decode(secret);
-
-        // Ensure key is at least 48 bytes (HS384 requires at least 384 bits)
-        if (decodedKey.length < 48) {
-            throw new IllegalArgumentException("JWT secret key must be at least 384 bits (48 bytes) long.");
-        }
-
-        this.SECRET_KEY = Keys.hmacShaKeyFor(decodedKey);
+        byte[] keyBytes = Base64.getDecoder().decode(secret); // Decode the Base64 secret
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes); // Create the SecretKey
     }
 
     public String extractUsername(String token) {
@@ -34,13 +29,13 @@ public class JwtService {
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        Claims claims = extractAllClaims(token);
+        final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(SECRET_KEY)
+                .setSigningKey(secretKey) // Use the SecretKey
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -51,7 +46,7 @@ public class JwtService {
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours expiry
-                .signWith(SECRET_KEY, SignatureAlgorithm.HS384) // Changed to HS384
+                .signWith(secretKey, SignatureAlgorithm.HS384) // Sign with the key and algorithm
                 .compact();
     }
 
@@ -61,6 +56,10 @@ public class JwtService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        return extractExpiration(token).before(new Date());
+    }
+
+    public Date extractExpiration(String token) {
+        return extractClaim(token, Claims::getExpiration);
     }
 }

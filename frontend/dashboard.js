@@ -1,11 +1,8 @@
-console.log("dashboard.js loaded");
-
 document.addEventListener("DOMContentLoaded", () => {
-    // Call functions to load data when the DOM is ready
-    loadUpcomingReviews();
-    loadBlackouts();
+    //  Removed redundant token check and redirect from here.
+    //  Authentication is now handled *exclusively* by auth.js.
 
-    // Logout button event listener
+    // Logout button event listener (This is correct and stays here)
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
         logoutBtn.addEventListener("click", () => {
@@ -13,6 +10,9 @@ document.addEventListener("DOMContentLoaded", () => {
             window.location.href = "login.html";
         });
     }
+    // Load data when the DOM is ready
+    loadUpcomingReviews();
+    loadBlackouts();
 
     // Blackout form submission event listener
     const blackoutForm = document.getElementById("blackout-form");
@@ -26,11 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const blackoutUser = document.getElementById("blackout-user").value;
 
             const token = localStorage.getItem("jwtToken");
-            if (!token) {
-                alert("You are not logged in.");
-                window.location.href = "login.html";
-                return;
-            }
+            // No need to check for token here, auth.js handles it
 
             try {
                 const response = await fetch("http://localhost:8080/api/blackout", {
@@ -48,9 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
 
                 if (response.status === 401 || response.status === 403) {
+                    //  No need to redirect here, auth.js handles it globally
                     alert("Unauthorized. Please log in again.");
-                    localStorage.removeItem("jwtToken");
-                    window.location.href = "login.html";
                     return;
                 }
 
@@ -75,13 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("🟢 Loading upcoming reviews...");
         const token = localStorage.getItem("jwtToken");
 
-        if (!token) {
-            console.error("❌ No token found! Redirecting to login...");
-            window.location.href = "login.html";
-            return;
-        }
-
-        console.log("🟢 Token found:", token);
+        // Removed redundant token check
 
         try {
             console.log("🟢 Making request to /api/upcoming-reviews...");
@@ -96,10 +85,9 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log(`🔹 Response status for upcoming reviews: ${response.status}`);
 
             if (response.status === 401 || response.status === 403) {
-                console.warn("🚨 Unauthorized! Logging out user.");
-                localStorage.removeItem("jwtToken");
-                window.location.href = "login.html";
-                return;
+                // No need to redirect or remove token, auth.js handles it
+                console.warn("🚨 Unauthorized!");
+                return; //  Just return; auth.js will handle the redirect
             }
 
             if (!response.ok) {
@@ -136,11 +124,7 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log("🟢 Loading blackouts...");
         const token = localStorage.getItem("jwtToken");
 
-        if (!token) {
-            console.error("🔴 No token found. Redirecting to login...");
-            window.location.href = "login.html";
-            return;
-        }
+        // Removed redundant token check
 
         try {
             console.log("🟢 Making request to /api/blackout...");
@@ -155,10 +139,9 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log(`🔹 Response status for blackouts: ${response.status}`);
 
             if (response.status === 401 || response.status === 403) {
-                console.warn("🚨 Unauthorized! Logging out user.");
-                localStorage.removeItem("jwtToken");
-                window.location.href = "login.html";
-                return;
+                // No need to redirect here, auth.js does it globally
+                console.warn("🚨 Unauthorized!");
+                return;  // Just return; auth.js handles the redirect.
             }
 
             if (!response.ok) {
