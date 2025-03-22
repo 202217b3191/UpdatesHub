@@ -10,6 +10,8 @@ import com.updateshub.repositories.NoteRepository;
 import com.updateshub.repositories.BlackoutRepository;
 import com.updateshub.security.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -18,10 +20,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@CrossOrigin(origins = "http://127.0.0.1:5500") // Allow frontend requests
+@CrossOrigin(origins = "http://127.0.0.1:5500")
 @RestController
 @RequestMapping("/api/notes")
 public class NotesController {
+
+    private static final Logger logger = LoggerFactory.getLogger(NotesController.class);
 
     @Autowired
     private NoteRepository notesRepository;
@@ -32,15 +36,17 @@ public class NotesController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // 🔹 Helper function to extract username from JWT
+    // 🔹 Helper function to extract username from JWT and log Authorization header
     private String extractUsername(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            logger.warn("Missing or invalid Authorization header");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Missing or invalid Authorization header");
         }
 
-        String token = authHeader.substring(7); // Remove "Bearer "
+        logger.info("Authorization Header: {}", authHeader); // ✅ Log the header
+        String token = authHeader.substring(7);
         return jwtUtil.extractUsername(token);
     }
 
@@ -58,7 +64,7 @@ public class NotesController {
             Note savedNote = notesRepository.save(note);
             return ResponseEntity.ok(savedNote);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to save the note", e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to save the note.");
         }
     }
@@ -71,7 +77,7 @@ public class NotesController {
             List<Note> userNotes = notesRepository.findByUsername(username);
             return ResponseEntity.ok(userNotes);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Failed to fetch notes", e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You must be authenticated to view notes.");
         }
     }
