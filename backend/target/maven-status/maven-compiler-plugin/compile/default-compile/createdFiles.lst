@@ -6,6 +6,7 @@ com\updateshub\security\JwtService.class
 com\updateshub\config\SecurityConfig.class
 com\updateshub\controllers\AuthController.class
 com\updateshub\UpdatesHubApplication.class
+com\updateshub\controllers\BlackoutController.class
 com\updateshub\repositories\NoteRepository.class
 com\updateshub\security\CustomUserDetailsService.class
 com\updateshub\services\UserDetailsServiceImpl.class
@@ -13,4 +14,3 @@ com\updateshub\security\JwtAuthenticationFilter.class
 com\updateshub\security\LogoutHandlerImpl.class
 com\updateshub\models\User.class
 com\updateshub\repositories\BlackoutRepository.class
-com\updateshub\security\JwtUtil.class

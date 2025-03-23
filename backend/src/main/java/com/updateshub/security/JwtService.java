@@ -22,6 +22,8 @@ public class JwtService {
     public JwtService(@Value("${jwt.secret}") String secret) {
         byte[] keyBytes = Base64.getDecoder().decode(secret); // Decode the Base64 secret
         this.secretKey = Keys.hmacShaKeyFor(keyBytes); // Create the SecretKey
+
+        System.out.println("Decoded Secret Key: " + Base64.getEncoder().encodeToString(secretKey.getEncoded()));
     }
 
     public String extractUsername(String token) {

@@ -10,116 +10,131 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Logout button functionality
-    const logoutBtn = document.getElementById("logoutBtn");
-    if (logoutBtn) {
-        logoutBtn.addEventListener("click", () => {
-            localStorage.removeItem("jwtToken");
-            window.location.href = "login.html";
-        });
-    }
+    document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        localStorage.removeItem("jwtToken");
+        window.location.href = "login.html";
+    });
 
-    // Use `Promise.all` to load both API calls simultaneously
+    // Load dashboard data
     try {
-        console.log("🟢 Fetching data in parallel...");
+        console.log("🟢 Fetching dashboard data...");
         await Promise.all([loadUpcomingReviews(), loadBlackouts()]);
     } catch (error) {
         console.error("❌ Error loading dashboard data:", error);
     }
 
-    // Blackout form submission handler
-    const blackoutForm = document.getElementById("blackout-form");
-    if (blackoutForm) {
-        blackoutForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-            await submitBlackout();
-        });
-    }
+    // Handle blackout form submission
+    document.getElementById("blackout-form")?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        await submitBlackout();
+    });
 });
 
-// ✅ Function to load upcoming reviews with API throttling protection
-async function loadUpcomingReviews() {
-    console.log("🟢 Loading upcoming reviews...");
+// 🔄 Generic function to make API calls with JWT Authorization
+async function fetchWithToken(url, options = {}) {
     const token = localStorage.getItem("jwtToken");
-    if (!token) return console.warn("🚨 No token found!");
+
+    if (!token) {
+        console.error("🚨 No JWT Token Found! User might not be authenticated.");
+        alert("⚠️ You need to log in first!");
+        return Promise.reject(new Error("No token found"));
+    }
+
+    // Default headers with JWT token
+    const headers = new Headers({
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json",
+        ...options.headers,  // Merge custom headers if provided
+    });
+
+    console.log(`📡 Fetching: ${url} with method ${options.method || "GET"}`);
 
     try {
-        const response = await fetchWithToken("http://localhost:8080/api/upcoming-reviews");
-        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+        const response = await fetch(url, { ...options, headers });
 
-        const data = await response.json();
+        if (response.status === 403) {
+            console.error("❌ Access Denied (403) - Unauthorized access.");
+            alert("⚠️ You don't have permission to access this resource.");
+            return Promise.reject(new Error("403 Forbidden"));
+        }
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`❌ Error ${response.status}:`, errorText);
+            throw new Error(`HTTP ${response.status}: ${errorText || "Unknown error"}`);
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error("❌ Fetch failed:", error.message);
+        return Promise.reject(error);
+    }
+}
+
+// 📌 Load upcoming reviews
+async function loadUpcomingReviews() {
+    console.log("🟢 Loading upcoming reviews...");
+
+    try {
+        const data = await fetchWithToken("http://localhost:8080/api/notes/upcoming-reviews");
         console.log("📌 Upcoming Reviews Data:", data);
-
-        // ✅ Efficiently update the UI
         updateReviewList(data);
     } catch (error) {
         console.error("❌ Error loading upcoming reviews:", error);
     }
 }
 
-// ✅ Function to load blackouts with API throttling protection
+// 📌 Load blackout schedules
 async function loadBlackouts() {
     console.log("🟢 Loading blackouts...");
-    const token = localStorage.getItem("jwtToken");
-    if (!token) return console.warn("🚨 No token found!");
 
     try {
-        const response = await fetchWithToken("http://localhost:8080/api/blackout");
-        if (!response.ok) throw new Error(`HTTP Error ${response.status}`);
+        const data = await fetchWithToken("http://localhost:8080/api/blackout");
 
-        const data = await response.json();
-        console.log("✅ Blackout Schedules:", data);
+        if (!data || data.length === 0) {
+            console.warn("⚠️ No blackout schedules found.");
+            updateBlackoutList([]); // Clear the UI list
+            return;
+        }
 
-        // ✅ Efficiently update the UI
+        console.log("✅ Blackout Schedules Loaded:", data);
         updateBlackoutList(data);
     } catch (error) {
         console.error("❌ Error loading blackouts:", error);
+        alert("⚠️ Failed to load blackout schedules.");
     }
 }
 
-// ✅ Unified function to handle API requests with token
-async function fetchWithToken(url) {
-    const token = localStorage.getItem("jwtToken");
-    return fetch(url, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-    });
-}
-
-// ✅ Function to submit blackout form
+// 📌 Submit blackout schedule
 async function submitBlackout() {
     console.log("🟢 Submitting blackout...");
 
-    const blackoutName = document.getElementById("blackout-name").value;
+    const blackoutName = document.getElementById("blackout-name").value.trim();
     const blackoutStart = document.getElementById("blackout-start").value;
     const blackoutEnd = document.getElementById("blackout-end").value;
-    const blackoutUser = document.getElementById("blackout-user").value;
-    const token = localStorage.getItem("jwtToken");
+    const blackoutUser = document.getElementById("blackout-user").value.trim();  // Likely unnecessary
+
+    if (!blackoutName || !blackoutStart || !blackoutEnd) {
+        alert("⚠️ All fields are required!");
+        return;
+    }
 
     try {
-        const response = await fetch("http://localhost:8080/api/blackout", {
+        const data = await fetchWithToken("http://localhost:8080/api/blackout", {
             method: "POST",
-            headers: {
-                "Authorization": `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 name: blackoutName,
                 start: blackoutStart,
                 end: blackoutEnd,
-                user: blackoutUser,
+                username: blackoutUser,  // Make sure backend expects this
             }),
         });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(`HTTP ${response.status}: ${errorData.message || "Unknown error"}`);
-        }
+        console.log("✅ Blackout added successfully:", data);
+        alert("✅ Blackout successfully added!");
 
-        console.log("✅ Blackout added successfully.");
-        await loadBlackouts(); // Refresh blackout list after submission
+        await loadBlackouts();  // Refresh blackout list after submission
         document.getElementById("blackout-form").reset();
     } catch (error) {
         console.error("❌ Error adding blackout:", error);
@@ -127,18 +142,36 @@ async function submitBlackout() {
     }
 }
 
-// ✅ Efficiently update upcoming reviews list
 function updateReviewList(data) {
     const reviewsDiv = document.getElementById("upcoming-reviews");
-    reviewsDiv.innerHTML = data.length
-        ? `<ul>${data.map(review => `<li>Review for ${review.noteTitle} on ${new Date(review.reviewDate).toLocaleString()}</li>`).join('')}</ul>`
-        : "<p>No upcoming reviews.</p>";
+
+    if (!Array.isArray(data) || data.length === 0) {
+        reviewsDiv.innerHTML = "<p>No upcoming reviews.</p>";
+        return;
+    }
+
+    reviewsDiv.innerHTML = `<ul>
+        ${data.map(review => `
+            <li>
+                Review for <strong>${review.title || "Untitled Note"}</strong> 
+                on <strong>${review.nextReviewDate ? new Date(review.nextReviewDate).toLocaleString() : "Invalid Date"}</strong>
+            </li>
+        `).join('')}
+    </ul>`;
 }
 
-// ✅ Efficiently update blackout list
+
+// 📌 Update the UI with blackout schedules
 function updateBlackoutList(data) {
     const blackoutList = document.getElementById("blackout-list");
     blackoutList.innerHTML = data.length
-        ? data.map(blackout => `<li>${blackout.name} - Start: ${new Date(blackout.start).toLocaleString()}, End: ${new Date(blackout.end).toLocaleString()}, Applied by: ${blackout.user}</li>`).join('')
+        ? data.map(blackout => `
+            <li>
+                <strong>${blackout.name}</strong> - 
+                Start: ${new Date(blackout.start).toLocaleString()}, 
+                End: ${new Date(blackout.end).toLocaleString()}, 
+                Applied by: ${blackout.user}
+            </li>
+        `).join('')
         : "<li>No blackout windows scheduled.</li>";
 }

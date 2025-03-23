@@ -6,6 +6,8 @@ import com.updateshub.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -13,7 +15,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,43 +24,45 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@Order(Ordered.HIGHEST_PRECEDENCE)  // Ensures this security filter is executed first
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
-    private final LogoutHandler logoutHandler; // Keep this if you need custom logout logic
-    private final UserDetailsService userDetailsService; // Use UserDetailsService, not UserRepository directly
+    private final LogoutHandler logoutHandler;
+    private final UserDetailsServiceImpl userDetailsService;
     private final UserRepository userRepository;
 
-    // Constructor Injection: Spring will automatically inject these dependencies
-    @Autowired // @Autowired is optional with a single constructor, but good practice
+    @Autowired
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter, LogoutHandler logoutHandler,
-            UserDetailsServiceImpl userDetailsService, UserRepository userRepository) {
+                          UserDetailsServiceImpl userDetailsService, UserRepository userRepository) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.logoutHandler = logoutHandler;
-        this.userDetailsService = userDetailsService; // Inject UserDetailsService
+        this.userDetailsService = userDetailsService;
         this.userRepository = userRepository;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // ✅ Enable CORS
-                .csrf(csrf -> csrf.disable()) // ❌ Disable CSRF for API
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Allow login & register
-                        .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/api/**").authenticated())
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")
-                        .addLogoutHandler(logoutHandler)
-                        .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200)));
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enable CORS
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for API
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**").permitAll() // Allow authentication APIs
+                .requestMatchers("/public/**").permitAll()  // Public endpoints
+                .requestMatchers("/api/blackout/**").authenticated() // Ensure only authenticated users access blackout APIs
+                .requestMatchers("/api/notes/upcoming-reviews").authenticated()
+                .anyRequest().authenticated()) // Everything else requires authentication
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+            .logout(logout -> logout
+                .logoutUrl("/api/auth/logout")
+                .addLogoutHandler(logoutHandler)
+                .logoutSuccessHandler((request, response, authentication) -> response.setStatus(200)));
 
         return http.build();
     }
@@ -69,16 +72,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // Use the injected UserDetailsService
-    // @Bean // No longer need this @Bean definition
-    // public UserDetailsService userDetailsService() {
-    // return new UserDetailsServiceImpl(userRepository);
-    // }
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-        provider.setUserDetailsService(userDetailsService); // Use the injected UserDetailsService
+        provider.setUserDetailsService(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder());
         return provider;
     }
@@ -91,17 +88,17 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.setAllowedOrigins(Arrays.asList(
-                "http://127.0.0.1:5500",
-                "http://localhost:5500")); // Allow frontend
+        corsConfig.setAllowedOrigins(List.of(
+            "http://127.0.0.1:5500",
+            "http://localhost:5500"
+        )); // Allow frontend access
 
-        corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        corsConfig.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        corsConfig.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         corsConfig.setAllowCredentials(true); // Allow cookies and authentication
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
         return source;
     }
-
 }

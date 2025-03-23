@@ -13,14 +13,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import com.updateshub.services.UserDetailsServiceImpl;
-import org.springframework.lang.NonNull;  // Use @NonNull for clarity
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import java.io.IOException;
 
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService; // Use unified JwtService
+    private final JwtService jwtService;
     private final UserDetailsServiceImpl userDetailsService;
 
     public JwtAuthenticationFilter(JwtService jwtService, UserDetailsServiceImpl userDetailsService) {
@@ -29,50 +29,44 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String username;
 
-        //  Early exit if no Authorization header or not a Bearer token
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            System.out.println("🚨 No Authorization header found!");
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String token = authHeader.substring(7);
-        try {
-            final String username = jwtService.extractUsername(token);  // Use JwtService
+        jwt = authHeader.substring(7);
 
-            //  Only proceed if username is valid and no authentication exists
+        try {
+            username = jwtService.extractUsername(jwt);
+            System.out.println("🔍 Extracted username from JWT: " + username);
+
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-                if (jwtService.isTokenValid(token, userDetails)) {
-                    // Create authentication token and set it in the security context
+                if (jwtService.isTokenValid(jwt, userDetails)) {
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
+                    System.out.println("✅ JWT Token is valid. Authentication set.");
                 } else {
-                    //  This is redundant, as the exceptions below will handle invalid tokens
-                    response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid token");
-                    return; // Stop processing
+                    System.out.println("❌ JWT Token is invalid!");
                 }
             }
-        } catch (ExpiredJwtException ex) {
-            // Handle expired token specifically
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token is expired");
-            return;  // Stop processing
-        } catch (MalformedJwtException | SignatureException ex) {
-            // Handle malformed or signature-invalid tokens
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
-            return;  // Stop processing
-        } catch (Exception ex) {
-             // Catch any other exceptions during token processing
-            logger.error("An error occurred during JWT authentication", ex);
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An error occurred during authentication");
-            return;
+        } catch (ExpiredJwtException e) {
+            System.out.println("❌ JWT Token expired: " + e.getMessage());
+        } catch (MalformedJwtException | SignatureException e) {
+            System.out.println("❌ JWT Token is malformed or has an invalid signature: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("❌ Error processing JWT: " + e.getMessage());
         }
 
-        filterChain.doFilter(request, response); // Continue the filter chain
+        filterChain.doFilter(request, response);
     }
 }
