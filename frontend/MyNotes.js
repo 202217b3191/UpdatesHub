@@ -24,19 +24,18 @@ document.addEventListener("DOMContentLoaded", loadNotes); // Corrected: DOMConte
 async function loadNotes() {
     const token = localStorage.getItem("jwtToken");
 
-    //  No need for token check/redirect here, auth.js handles it.
-
     try {
         const response = await fetch(API_URL, {
             method: "GET",
             headers: { "Authorization": `Bearer ${token}` }
         });
-		if (response.status === 401 || response.status === 403) {
+
+        if (response.status === 401 || response.status === 403) {
             alert("Unauthorized. Please log in again.");
-            return;  // auth.js will handle redirect
+            return;
         }
         if (!response.ok) {
-              const errorData = await response.json();
+            const errorData = await response.json();
             throw new Error(`Failed to load notes: ${response.status} - ${errorData.message || 'Unknown error'}`);
         }
 
@@ -61,7 +60,17 @@ async function loadNotes() {
 
             const encodedTitle = encodeHTML(note.title);
             const encodedContent = encodeHTML(note.content);
-            const nextReviewDate = note.nextReview ? new Date(note.nextReview).toLocaleDateString() : 'N/A'; // Handle potentially null dates
+
+            // ✅ Fix: Use correct property `nextReviewDate`
+            let nextReviewDate = "N/A";
+            if (note.nextReviewDate) {
+                try {
+                    nextReviewDate = new Date(note.nextReviewDate).toLocaleDateString();
+                } catch (error) {
+                    console.error("Error parsing nextReviewDate:", note.nextReviewDate, error);
+                }
+            }
+
             li.innerHTML = `
                 <span class="note-title" data-note-id="${note.id}" data-note-title="${encodedTitle}" data-note-content="${encodedContent}" data-note-next-review="${nextReviewDate}">
                     ${encodedTitle}
@@ -71,8 +80,8 @@ async function loadNotes() {
 
             list.appendChild(li);
 
-            // Add event listener directly to the note item
-            li.addEventListener("click", function() {
+            // ✅ Fix: Click event to open modal with correct values
+            li.addEventListener("click", function () {
                 const noteId = this.querySelector(".note-title").dataset.noteId;
                 const noteTitle = this.querySelector(".note-title").dataset.noteTitle;
                 const noteContent = this.querySelector(".note-title").dataset.noteContent;

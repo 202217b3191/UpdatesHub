@@ -1,26 +1,28 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // --- Authentication Check (Moved from dashboard.js) ---
-    const token = localStorage.getItem("jwtToken");
-    if (!token) {
-        console.log("No token found in auth.js, redirecting.");
-        window.location.href = "login.html";
-        return; //  Important: Stop further execution in auth.js
-    } else {
-        console.log("Token found in auth.js:", token);
-    }
-    // --- End Authentication Check ---
+    console.log("📌 Auth.js Loaded...");
 
+    // Add a slight delay to reduce rapid token checks (helps with throttling)
+    setTimeout(() => {
+        const token = localStorage.getItem("jwtToken");
 
-    const loginBtn = document.getElementById("loginBtn");
-    if (loginBtn) {
-        loginBtn.addEventListener("click", loginUser);
-    }
+        if (!token) {
+            console.warn("🚨 No token found, user must log in.");
+            // No need to redirect if already on login page
+            if (!window.location.href.includes("login.html")) {
+                window.location.href = "login.html";
+            }
+        } else {
+            console.log("✅ Token found:", token);
+        }
+    }, 300); // Small delay (300ms) to prevent excessive requests
 
-    const registerBtn = document.getElementById("registerBtn");
-    if (registerBtn) {
-        registerBtn.addEventListener("click", registerUser);
-    }
+    // --- Event Delegation for Login & Register Buttons ---
+    document.body.addEventListener("click", (event) => {
+        if (event.target.id === "loginBtn") loginUser();
+        if (event.target.id === "registerBtn") registerUser();
+    });
 });
+
 
 function loginUser() {
     const usernameInput = document.getElementById("loginUsername");
