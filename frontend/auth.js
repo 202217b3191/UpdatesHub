@@ -1,22 +1,21 @@
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("📌 Auth.js Loaded...");
 
-    // Add a slight delay to reduce rapid token checks (helps with throttling)
     setTimeout(() => {
         const token = localStorage.getItem("jwtToken");
 
         if (!token) {
             console.warn("🚨 No token found, user must log in.");
-            // No need to redirect if already on login page
-            if (!window.location.href.includes("login.html")) {
+            // ✅ Prevent redirect on register page
+            if (!window.location.href.includes("login.html") && !window.location.href.includes("register.html")) {
                 window.location.href = "login.html";
             }
         } else {
             console.log("✅ Token found:", token);
         }
-    }, 300); // Small delay (300ms) to prevent excessive requests
+    }, 300);
 
-    // --- Event Delegation for Login & Register Buttons ---
     document.body.addEventListener("click", (event) => {
         if (event.target.id === "loginBtn") loginUser();
         if (event.target.id === "registerBtn") registerUser();
@@ -64,7 +63,7 @@ function loginUser() {
     });
 }
 
-function registerUser() {
+async function registerUser() {
     const usernameInput = document.getElementById("registerUsername");
     const passwordInput = document.getElementById("registerPassword");
 
@@ -73,29 +72,47 @@ function registerUser() {
         return;
     }
 
-    const username = usernameInput.value;
-    const password = passwordInput.value;
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
 
-    fetch("http://localhost:8080/api/auth/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password })
-    })
-    .then(async (response) => {  // Make this async
-      if(!response.ok){
-        const errorData = await response.json();
-        throw new Error(`Registration failed: ${response.status} - ${errorData.message || "Unknown Error"}`);
-      }
-        return response.json();
-    })
-    .then(() => {
-        alert("✅ Registration successful! You can now log in.");
-        window.location.href = "login.html";
-    })
-    .catch(error => {
+    if (!username || !password) {
+        alert("⚠️ Username and password cannot be empty!");
+        return;
+    }
+
+    try {
+        const response = await fetch("http://localhost:8080/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+        });
+
+        // ✅ Handle 409 Conflict (User Already Exists)
+        if (response.status === 409) {
+            throw new Error("⚠️ User already exists! Try a different username.");
+        }
+
+        // ✅ Check content type before parsing JSON
+        const contentType = response.headers.get("Content-Type");
+        let data = null;
+        if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+        } else {
+            throw new Error(await response.text()); // Read error as plain text
+        }
+
+        if (data.token) {
+            localStorage.setItem("jwtToken", data.token);
+            alert("✅ Registration successful! Redirecting to dashboard...");
+            window.location.href = "dashboard.html";
+        } else {
+            alert("✅ Registration successful! You can now log in.");
+            window.location.href = "login.html";
+        }
+    } catch (error) {
         console.error("❌ Error:", error);
-        alert(error.message); // Display the error message
-    });
+        alert(error.message);
+    }
 }
 
 // ✅ Logout Function (This is correct, and should stay here)
