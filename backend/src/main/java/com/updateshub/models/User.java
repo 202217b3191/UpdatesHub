@@ -6,7 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections; // Use Collections.emptyList()
+import java.util.Collections; 
 
 @Document(collection = "users")
 public class User implements UserDetails { // Directly implement UserDetails
@@ -15,7 +15,7 @@ public class User implements UserDetails { // Directly implement UserDetails
     private String username;
     private String password;
 
-    // Default constructor (required by frameworks like Spring Data)
+    
     public User() {}
 
     // Constructor
@@ -39,9 +39,8 @@ public class User implements UserDetails { // Directly implement UserDetails
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList(); // Return an empty list if no roles/authorities
-        // Or, if you have roles:
-        // return List.of(new SimpleGrantedAuthority("ROLE_USER")); // Example with a single role
+        return Collections.emptyList(); 
+        
     }
 
     @Override
@@ -60,21 +59,21 @@ public class User implements UserDetails { // Directly implement UserDetails
 
     @Override
     public boolean isAccountNonExpired() {
-        return true; // Or implement your logic
+        return true; 
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true; // Or implement your logic
+        return true; 
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true; // Or implement your logic
+        return true; 
     }
 
     @Override
     public boolean isEnabled() {
-        return true; // Or implement your logic
+        return true; 
     }
 }

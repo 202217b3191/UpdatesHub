@@ -17,10 +17,10 @@ function encodeHTML(str) {
     return encoded;
 }
 
-// ✅ Load Notes on Page Load - Use DOMContentLoaded, not load
-document.addEventListener("DOMContentLoaded", loadNotes); // Corrected: DOMContentLoaded
+// Load Notes on Page Load - Use DOMContentLoaded, not load
+document.addEventListener("DOMContentLoaded", loadNotes); 
 
-// ✅ Load Notes (Updated for Modal View)
+// Load Notes (Updated for Modal View)
 async function loadNotes() {
     const token = localStorage.getItem("jwtToken");
 
@@ -61,7 +61,7 @@ async function loadNotes() {
             const encodedTitle = encodeHTML(note.title);
             const encodedContent = encodeHTML(note.content);
 
-            // ✅ Fix: Use correct property `nextReviewDate`
+            
             let nextReviewDate = "N/A";
             if (note.nextReviewDate) {
                 try {
@@ -80,7 +80,7 @@ async function loadNotes() {
 
             list.appendChild(li);
 
-            // ✅ Fix: Click event to open modal with correct values
+            
             li.addEventListener("click", function () {
                 const noteId = this.querySelector(".note-title").dataset.noteId;
                 const noteTitle = this.querySelector(".note-title").dataset.noteTitle;
@@ -95,7 +95,7 @@ async function loadNotes() {
     }
 }
 
-// ✅ Open Note Modal for Viewing & Managing Notes
+// Open Note Modal for Viewing & Managing Notes
 function openNoteModal(id, title, content, nextReviewDate) {
     sessionStorage.setItem("selectedNoteId", id);
 
@@ -107,12 +107,12 @@ function openNoteModal(id, title, content, nextReviewDate) {
 
     if (modalTitle) modalTitle.innerText = decodeHTML(title);
     if (modalContent) modalContent.innerText = decodeHTML(content);
-    if (modalNextReview) modalNextReview.innerText = nextReviewDate; // No need to re-parse the date
-    if (editTitleInput) editTitleInput.value = decodeHTML(title); // Pre-fill edit fields
+    if (modalNextReview) modalNextReview.innerText = nextReviewDate; 
+    if (editTitleInput) editTitleInput.value = decodeHTML(title); 
     if (editContentTextarea) editContentTextarea.value = decodeHTML(content);
 
-    document.getElementById("editNoteSection").style.display = "none"; // Initially hide edit section
-    document.getElementById("noteModal").classList.add("show"); // Use class for display
+    document.getElementById("editNoteSection").style.display = "none"; 
+    document.getElementById("noteModal").classList.add("show"); 
 }
 
 function decodeHTML(str) {
@@ -121,21 +121,21 @@ function decodeHTML(str) {
     return decodedString;
 }
 
-// ✅ Close Modal
+// Close Modal
 document.getElementById("closeModalBtn").addEventListener("click", closeModal);
 
 function closeModal() {
     document.getElementById("noteModal").classList.remove("show");
 }
 
-// ✅ Edit Note (Shows Input Fields)
+// Edit Note
 document.getElementById("editButton").addEventListener("click", editNote);
 
 function editNote() {
     document.getElementById("editNoteSection").style.display = "block";
 }
 
-// ✅ Update Note
+// Update Note
 document.getElementById("updateButton").addEventListener("click", updateNote);
 
 async function updateNote() {
@@ -156,11 +156,11 @@ async function updateNote() {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
             },
-            body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() }) //  Keep sending nextReviewDate
+            body: JSON.stringify({ title, content, nextReviewDate: new Date().toISOString() }) 
         });
 		if (response.status === 401 || response.status === 403) {
             alert("Unauthorized. Please log in again.");
-             // auth.js handles redirect
+             
              return;
         }
         if (!response.ok) {
@@ -177,7 +177,7 @@ async function updateNote() {
     }
 }
 
-// ✅ Delete Note
+// Delete Note
 document.getElementById("deleteButton").addEventListener("click", deleteNote);
 
 async function deleteNote() {
@@ -194,7 +194,7 @@ async function deleteNote() {
 
 		if (response.status === 401 || response.status === 403) {
             alert("Unauthorized. Please log in again.");
-             // auth.js handles redirect
+             
              return;
         }
         if (!response.ok) {
@@ -211,7 +211,7 @@ async function deleteNote() {
     }
 }
 
-// ✅ Submit Review (Spaced Repetition)
+// Submit Review (Spaced Repetition)
 document.getElementById("submitReviewButton").addEventListener("click", submitReview);
 
 async function submitReview() {
@@ -229,16 +229,16 @@ async function submitReview() {
 
     try {
         const response = await fetch(`${API_URL}/${noteId}/review?quality=${quality}`, { //  Corrected URL
-            method: "POST", // Corrected: Use POST
+            method: "POST", 
             headers: {
-                // "Content-Type": "application/json",  // No Content-Type needed for query parameters
+                
                 "Authorization": `Bearer ${token}`
             },
-            // No body needed for query parameters
+            
         });
 		if (response.status === 401 || response.status === 403) {
             alert("Unauthorized. Please log in again.");
-             // auth.js handles redirect
+             
              return;
         }
         if (!response.ok) {
@@ -254,7 +254,7 @@ async function submitReview() {
     }
 }
 
-// ✅ Search Notes
+//Search Notes
 document.getElementById("searchButton").addEventListener("click", searchNotes);
 
 function searchNotes() {

@@ -24,14 +24,14 @@ body {
 /* Button Container */
 .button-container {
     display: flex;
-    justify-content: center; /* Center-align buttons */
-    gap: 20px; /* Add space between buttons */
+    justify-content: center; 
+    gap: 20px; 
     align-items: center;
     width: 100%;
     padding: 10px 0;
 }
 
-/* Button Styling (Generic) */
+/* Button Styling */
 .create-note-btn, .logout,  button{
     text-decoration: none;
     color: white;
@@ -47,14 +47,14 @@ button{
      background: #007BFF;
 }
 
-/* Button Styling (Specific) */
+/* Button Styling */
 .create-note-btn, .logout {
      background: linear-gradient(to right, #E94E77, #FF6B6B);
 }
 
 
 .create-note-btn:hover, .logout:hover, button:hover {
-    background: linear-gradient(to right, #FF6B6B, #E94E77);  /*  Consistent hover for gradient buttons */
+    background: linear-gradient(to right, #FF6B6B, #E94E77);  
     transform: scale(1.05);
 }
 
@@ -124,8 +124,8 @@ button{
     color: #4A90E2;
 }
 
-/* Notes List (and similar lists) */
-#notesList, #blackout-list { /*  Added #blackout-list */
+/* Notes List */
+#notesList, #blackout-list { 
     width: 80%;
     max-width: 800px;
     list-style-type: none;
@@ -133,7 +133,7 @@ button{
     margin-top: 10px;
 }
 
-.note-item, #blackout-list li { /* Added #blackout-list li */
+.note-item, #blackout-list li { 
     padding: 12px;
     background: #ECF0F1;
     border-radius: 8px;
@@ -143,16 +143,16 @@ button{
     text-align: center; /* Keep text-align */
     font-weight: bold;
     display: flex;  /*  Keep display: flex */
-    justify-content: space-between; /* Keep justify-content */
+    justify-content: space-between; 
     align-items: center;  /* Keep align-items */
 }
 
-.note-item:hover, #blackout-list li:hover { /*  Added hover for blackout list items */
+.note-item:hover, #blackout-list li:hover { 
     background: #D6DBDF;
 }
 
 
-/* Review Button (if needed - keep if you have review buttons) */
+/* Review Button */
 .review-btn {
     background: #4A90E2;
     color: white;
@@ -170,14 +170,14 @@ button{
     transform: scale(0.98);
 }
 
-/* Next Review Date (if needed - keep) */
+/* Next Review Date*/
 .next-review {
     font-size: 14px;
     color: #BDC3C7;
     font-style: italic;
 }
 
-/* Modal Styles (Keep and improve if you add modals later) */
+/* Modal Styles*/
 .modal {
     display: none;
     position: fixed;
@@ -214,8 +214,8 @@ button{
     }
 }
 
-/* Form and Input Styles (Generic) */
-.input-field, form input:not([type="submit"]), form textarea {  /*  More specific selector for form inputs */
+/* Form and Input Styles*/
+.input-field, form input:not([type="submit"]), form textarea {  
     width: 100%;
     padding: 12px;
     margin: 12px 0;  /* Keep margin */
@@ -226,9 +226,9 @@ button{
     box-sizing: border-box;
 }
 form label {
-    display: block; /* Make labels block-level */
-    margin-bottom: 5px; /* Add some space below labels */
-    font-weight: bold; /* Make labels bold */
+    display: block; 
+    margin-bottom: 5px; 
+    font-weight: bold; 
     text-align: left;
 }
 
@@ -237,14 +237,14 @@ form label {
     outline: none;
 }
 
-#content {  /* Textarea specific */
+#content {  
     resize: vertical;
     min-height: 150px;
 }
 
-/*  Button (already defined above, no need to repeat) */
 
-/* Close Button (Keep) */
+
+
 .close-btn {
     position: absolute;
     top: 16px;
@@ -271,7 +271,7 @@ form label {
         padding: 10px 20px;
     }
 
-    .input-field, form input, form textarea { /* Apply to form inputs too */
+    .input-field, form input, form textarea { 
         font-size: 14px;
     }
 
@@ -279,27 +279,22 @@ form label {
         font-size: 18px;
     }
      .container {
-        flex-direction: column; /* Stack sidebar and content on small screens */
+        flex-direction: column; 
     }
 
     .sidebar {
-        width: 100%; /* Full width on small screens */
-        margin-bottom: 20px; /* Add space between sidebar and content */
+        width: 100%; 
+        margin-bottom: 20px; 
     }
     .content{
         margin-left: 0px;
     }
 }
 
-/* Dashboard-specific styles (can be merged into main styles now) */
+/* Dashboard-specific styles*/
 #progress-section, #upcoming-reviews {
     background: white;
     padding: 15px;
     margin-bottom: 20px;
     border-radius: 8px;
 }
-/* No longer needed, as styles are incorporated above:
-form { ... }
-input { ... }
-button { ... }
-*/

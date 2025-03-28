@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 });
 
-// 🔄 Generic function to make API calls with JWT Authorization
+//Generic function to make API calls with JWT Authorization
 async function fetchWithToken(url, options = {}) {
     const token = localStorage.getItem("jwtToken");
 
@@ -71,7 +71,7 @@ async function fetchWithToken(url, options = {}) {
     }
 }
 
-// 📌 Load upcoming reviews
+// Load upcoming reviews
 async function loadUpcomingReviews() {
     console.log("🟢 Loading upcoming reviews...");
 
@@ -84,7 +84,7 @@ async function loadUpcomingReviews() {
     }
 }
 
-// 📌 Load blackout schedules
+// Load blackout schedules
 async function loadBlackouts() {
     console.log("🟢 Loading blackouts...");
 
@@ -105,7 +105,7 @@ async function loadBlackouts() {
     }
 }
 
-// 📌 Submit blackout schedule
+// Submit blackout schedule
 async function submitBlackout() {
     console.log("🟢 Submitting blackout...");
 
@@ -161,7 +161,7 @@ function updateReviewList(data) {
 }
 
 
-// 📌 Update the UI with blackout schedules
+//Update the UI with blackout schedules
 function updateBlackoutList(data) {
     const blackoutList = document.getElementById("blackout-list");
     blackoutList.innerHTML = data.length

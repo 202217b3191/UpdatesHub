@@ -1,4 +1,4 @@
-// ✅ Ensure user is authenticated when loading index page
+// Ensure user is authenticated when loading index page
 document.addEventListener("DOMContentLoaded", () => {
     const token = localStorage.getItem("jwtToken");
 
@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("🟢 User is logged in. Token found.");
 });
 
-// ✅ Open Create Note Modal
+// Open Create Note Modal
 function openCreateNoteModal() {
     const modal = document.getElementById('createNoteModal');
     if (modal) {
@@ -21,7 +21,7 @@ function openCreateNoteModal() {
     }
 }
 
-// ✅ Close Create Note Modal
+// Close Create Note Modal
 function closeCreateNoteModal() {
     const modal = document.getElementById('createNoteModal');
     if (modal) {
@@ -31,7 +31,7 @@ function closeCreateNoteModal() {
     }
 }
 
-// ✅ Create New Note
+// Create New Note
 async function createNote() {
     const title = document.getElementById('noteTitle').value.trim();
     const content = document.getElementById('noteContent').value.trim();
@@ -72,7 +72,7 @@ async function createNote() {
     }
 }
 
-// ✅ Logout Function
+// Logout Function
 function logout() {
     localStorage.removeItem("jwtToken");
     sessionStorage.clear();
@@ -80,7 +80,7 @@ function logout() {
     window.location.href = "login.html"; // Redirect to login page
 }
 
-// ✅ Attach event listeners for logout
+// Attach event listeners for logout
 document.addEventListener("DOMContentLoaded", () => {
     const logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {

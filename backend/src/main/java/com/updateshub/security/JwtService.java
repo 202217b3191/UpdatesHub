@@ -18,7 +18,7 @@ public class JwtService {
 
     private final SecretKey secretKey;
 
-    //  Inject the Base64-encoded secret from application.properties
+    
     public JwtService(@Value("${jwt.secret}") String secret) {
         byte[] keyBytes = Base64.getDecoder().decode(secret); // Decode the Base64 secret
         this.secretKey = Keys.hmacShaKeyFor(keyBytes); // Create the SecretKey

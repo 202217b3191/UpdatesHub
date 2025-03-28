@@ -11,7 +11,7 @@ public class LogoutHandlerImpl implements LogoutHandler {
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
-        // Perform logout actions, like clearing session or JWT token
+        
         System.out.println("User logged out successfully");
     }
 }

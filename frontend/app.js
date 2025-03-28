@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:8080/api/notes";
 
-// ✅ Save Note
+// Save Note
 async function saveNote() {
     const title = document.getElementById("title").value.trim();
     const content = document.getElementById("content").value.trim();
@@ -46,7 +46,7 @@ async function saveNote() {
     }
 }
 
-// ✅ Load Notes
+// Load Notes
 async function loadNotes() {
     const token = localStorage.getItem("jwtToken");
 
@@ -86,5 +86,5 @@ async function loadNotes() {
     }
 }
 
-// ✅ Attach event listeners on page load
+// Attach event listeners on page load
 document.addEventListener("DOMContentLoaded", loadNotes);

@@ -24,10 +24,10 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        // Build UserDetails without authorities since you're not using roles
+        
         UserBuilder builder = org.springframework.security.core.userdetails.User.withUsername(user.getUsername());
         builder.password(user.getPassword());
-        builder.authorities("USER"); // A default authority to avoid errors, not used in your case
+        builder.authorities("USER"); 
 
         return builder.build();
     }

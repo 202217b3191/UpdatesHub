@@ -2,7 +2,7 @@ package com.updateshub.controllers;
 
 import com.updateshub.models.User;
 import com.updateshub.repositories.UserRepository;
-import com.updateshub.security.JwtService; // Use the unified JwtService
+import com.updateshub.security.JwtService; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,20 +13,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"}) // Allow frontend requests (and other origins if needed)
+@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"}) 
 public class AuthController {
 
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
-    private JwtService jwtService; // Use the unified JwtService
+    private JwtService jwtService; 
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
    @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
-        // Check if user already exists
+        // Checks if user already exists
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("User already exists"); // Use ResponseEntity
         }

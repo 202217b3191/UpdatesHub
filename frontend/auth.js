@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!token) {
             console.warn("🚨 No token found, user must log in.");
-            // ✅ Prevent redirect on register page
+            
             if (!window.location.href.includes("login.html") && !window.location.href.includes("register.html")) {
                 window.location.href = "login.html";
             }
@@ -42,7 +42,7 @@ function loginUser() {
     })
     .then(async (response) => { // Make this async
         if (!response.ok) {
-          const errorData = await response.json(); // Get error details
+          const errorData = await response.json(); 
           throw new Error(`Login failed: ${response.status} - ${errorData.message || 'Unknown error'}`);
         }
         return response.json();
@@ -53,7 +53,7 @@ function loginUser() {
             alert("✅ Login successful!");
             window.location.href = "index.html"; // Redirect to homepage
         } else {
-            //  This case is likely redundant, given the error handling above.
+            
             alert("❌ Invalid credentials, please try again.");
         }
     })
@@ -87,12 +87,12 @@ async function registerUser() {
             body: JSON.stringify({ username, password })
         });
 
-        // ✅ Handle 409 Conflict (User Already Exists)
+        // Handle 409 Conflict (User Already Exists)
         if (response.status === 409) {
             throw new Error("⚠️ User already exists! Try a different username.");
         }
 
-        // ✅ Check content type before parsing JSON
+        // Check content type before parsing JSON
         const contentType = response.headers.get("Content-Type");
         let data = null;
         if (contentType && contentType.includes("application/json")) {
@@ -115,15 +115,15 @@ async function registerUser() {
     }
 }
 
-// ✅ Logout Function (This is correct, and should stay here)
+// Logout Function 
 function logout() {
     localStorage.removeItem("jwtToken");
-    sessionStorage.clear(); // Good practice to clear sessionStorage too
+    sessionStorage.clear(); 
     alert("✅ Logged out successfully!");
-    window.location.href = "login.html"; // Redirect to login page
+    window.location.href = "login.html"; 
 }
 
-// Export the logout function so dashboard.js can use it.
+
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = { logout };
 }

@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 public class Blackout {
     @Id
     private String id;
-    private String name; // Added name attribute
-    private String username;  //  user associated with the blackout
+    private String name; 
+    private String username;  
     private LocalDateTime start;
     private LocalDateTime end;
-    private String user; //  user who applied the blackout
+    private String user; 
 
     // Constructors
     public Blackout() {}
@@ -41,6 +41,6 @@ public class Blackout {
     public LocalDateTime getEnd() { return end; }
     public void setEnd(LocalDateTime end) { this.end = end; }
 
-    public String getUser() { return user; } // Corrected getter name
-    public void setUser(String user) { this.user = user; } // Corrected setter name
+    public String getUser() { return user; } 
+    public void setUser(String user) { this.user = user; } 
 }

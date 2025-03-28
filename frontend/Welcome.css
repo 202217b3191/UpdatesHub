@@ -1,4 +1,4 @@
-/* Global Reset */
+
 body {
     margin: 0;
     padding: 0;
@@ -8,7 +8,7 @@ body {
     text-align: center;
 }
 
-/* Logo Container - Top Left */
+
 .logo-container {
     position: absolute;
     top: 15px;
@@ -19,13 +19,13 @@ body {
 
 /* Logo Image */
 .logo-container img {
-    width: 35px; /* Small but visible */
+    width: 35px; 
     height: auto;
     object-fit: contain;
     display: block;
 }
 
-/* Auth Buttons (Login/Register) - Top Right */
+
 .auth-buttons {
     position: absolute;
     top: 15px;
